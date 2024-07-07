@@ -1,0 +1,18 @@
+[
+    {
+        "regex": "(?:do\\s+|if\\s+i\\s+don't\\s+)?(?:i|you)?\\s*(?:really\\s+)?(?:need\\s+to|have\\s+to|must|gotta|can)\\s+own\\s+(?:an?\\s+)?(?:official\\s+)?(?:copy\\s+of\\s+)?(?:the\\s+|this\\s+|said\\s+|these\\s+|those\\s+)?(?:cod\\s+)?games?\\s*(?:on\\s+steam|on\\s+alterware)?",
+        "response": "Yes, it is required to own a copy of the game to utilize our clients"
+    },
+    {
+        "regex": "\bhow can I open the console ingame\b",
+        "response": "Press the tilde key (~) or grave key (`) to enter console.\n https://i.imgur.com/drPaC0f.png"
+    },
+    {
+        "regex": "(.*)(HOW|WHERE)(.*)(CHANGE|MODIFY)(.*)(USERNAME|NAME|IGN)(.*)",
+        "response": "``/name WhateverNameYouWant`` on the in-game console.\nYou open the in-game console with the ~ or ` key (underneath ESC). If you're on a 60% keyboard it's Fn+ESC.\nhttps://i.imgur.com/drPaC0f.png"
+    },
+    {
+        "regex": "online profile is invalid",
+        "response": "Close your game, locate your Modern Warfare 2 game folder, and delete the `players` folder"
+    }
+]
