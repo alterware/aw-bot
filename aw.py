@@ -171,6 +171,33 @@ async def on_message_delete(message):
 
 
 @bot.event
+async def on_bulk_message_delete(messages):
+    channel = bot.get_channel(BOT_LOG)
+    if channel:
+        for message in messages:
+            embed = discord.Embed(
+                title="Deleted Message",
+                description="A message was deleted.",
+                color=0xDD2E44,
+            )
+            embed.add_field(
+                name="Author", value=message.author.mention, inline=True
+            )  # noqa
+            embed.add_field(
+                name="Channel", value=message.channel.mention, inline=True
+            )  # noqa
+            if message.content:
+                embed.add_field(
+                    name="Content", value=message.content, inline=False
+                )  # noqa
+            embed.set_footer(
+                text=f"Message ID: {message.id} | Author ID: {message.author.id}" # noqa
+            )
+
+            await channel.send(embed=embed)
+
+
+@bot.event
 async def on_message(message):
     if message.author == bot.user:
         return
