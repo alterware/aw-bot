@@ -4,6 +4,22 @@
         "response": "Yes, it is required to own a copy of the game to utilize our clients"
     },
     {
+        "regex": "own(ing)* the game",
+        "response": "Yes, it is required to own a copy of the game to utilize our clients"
+    },
+    {
+        "regex": "^.*?\\bbuy\\b.*?\\btwice\\b.*?$",
+        "response": "There is no stipulation in the law that entitles you to a free PC copy of the game if you bought it on another platform"
+    },
+    {
+        "regex": "^.*?\\bbuying\\b.*?\\btwice\\b.*?$",
+        "response": "There is no stipulation in the law that entitles you to a free PC copy of the game if you bought it on another platform"
+    },
+    {
+        "regex": "^.*?\\bbought\\b.*?\\btwice\\b.*?$",
+        "response": "There is no stipulation in the law that entitles you to a free PC copy of the game if you bought it on another platform"
+    },
+    {
         "regex": "\bhow can I open the console ingame\b",
         "response": "Press the tilde key (~) or grave key (`) to enter console.\n https://i.imgur.com/drPaC0f.png"
     },
@@ -12,7 +28,35 @@
         "response": "``/name WhateverNameYouWant`` on the in-game console.\nYou open the in-game console with the ~ or ` key (underneath ESC). If you're on a 60% keyboard it's Fn+ESC.\nhttps://i.imgur.com/drPaC0f.png"
     },
     {
+        "regex": "^.*?\\bchange\\b.*?\\b(username|name)\\b.*?$",
+        "response": "``/name WhateverNameYouWant`` on the in-game console.\nYou open the in-game console with the ~ or ` key (underneath ESC). If you're on a 60% keyboard it's Fn+ESC.\nhttps://i.imgur.com/drPaC0f.png"
+    },
+    {
         "regex": "online profile is invalid",
         "response": "Close your game, locate your Modern Warfare 2 game folder, and delete the `players` folder"
+    },
+    {
+        "regex": "vac ban",
+        "response": "The short answer is no. Our CoD clients are completely external to Steam and Steam servers (you don not play with Steam users). It is impossible to get VAC banned. The servers are completely separate from Steam. You are at no risk of receiving a VAC ban"
+    },
+    {
+        "regex": "do i need Steam",
+        "response": "Yes, it is required to own a copy of the game on Steam to utilize our clients"
+    },
+    {
+        "regex": "unlock(\\s)*all",
+        "response": "Just use the 'Unlock All' button in the barracks menu to get 10th prestige level 70 with everything unlocked. On S1 and IW6, you must type `unlockstats` in either the in-game console or the external console"
+    },
+    {
+        "regex": "unlock everything",
+        "response": "Just use the 'Unlock All' button in the barracks menu to get 10th prestige level 70 with everything unlocked. On S1 and IW6, you must type `unlockstats` in either the in-game console or the external console"
+    },
+    {
+        "regex": "^.*?\\b(get|buy)\\b.*?\\b(dlc|dlcs)\\b.*?$",
+        "response": "We ask all our users to purchase the DLCs on Steam. If you're looking for instructions on how to get the official IW4x DLC map packs, please refer to this forum post: https://forum.alterware.dev/t/how-to-download-bonus-content-iw4x/901"
+    },
+    {
+        "regex": "steam(\\s)*deck",
+        "response": "Are you wondering how to install our clients on the Steam Deck? Check out this guide: https://forum.alterware.dev/t/playing-alterware-on-linux-guide-desktop-handheld/1036"
     }
 ]

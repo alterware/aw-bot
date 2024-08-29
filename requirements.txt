@@ -1,3 +1,2 @@
 discord.py
-flake8
 requests

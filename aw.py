@@ -1,7 +1,8 @@
-import datetime
 import json
 import os
+import random
 import re
+from datetime import datetime, timedelta, timezone
 from typing import Literal
 
 import discord
@@ -22,6 +23,7 @@ ALLOWED_CHANNELS = [
     1145459788151537804,
     1145469106133401682,
     1117540484085194833,
+    1112049391482703873,
 ]
 GENERAL_CHANNEL = 1110531063744303138
 
@@ -34,6 +36,10 @@ except FileNotFoundError:
 
 bot = commands.Bot(command_prefix="!", intents=discord.Intents.all())
 tree = bot.tree
+
+
+def aware_utcnow():
+    return datetime.now(timezone.utc)
 
 
 def fetch_api_data():
@@ -146,8 +152,84 @@ async def on_tree_error(
 bot.tree.on_error = on_tree_error
 
 
+async def detect_ghost_ping(message):
+    if not message.mentions:
+        return
+
+    channel = bot.get_channel(BOT_LOG)
+    if channel:
+        embed = discord.Embed(
+            title="Ghost Ping",
+            description="A ghost ping was detected.",
+            color=0xDD2E44,
+        )
+        embed.add_field(
+            name="Author", value=message.author.mention, inline=True
+        )  # noqa
+        embed.add_field(
+            name="Channel", value=message.channel.mention, inline=True
+        )  # noqa
+
+        mentioned_users = ", ".join([user.name for user in message.mentions])
+        embed.add_field(
+            name="Mentions",
+            value=f"The message deleted by {message.author} mentioned: {mentioned_users}",  # noqa
+            inline=False,
+        )  # noqa
+
+        embed.set_footer(
+            text=f"Message ID: {message.id} | Author ID: {message.author.id}"
+        )
+
+        await channel.send(embed=embed)
+
+
+async def detect_ghost_ping_in_edit(before, after):
+    before_mentions = set(before.mentions)
+    after_mentions = set(after.mentions)
+
+    if before_mentions == after_mentions:
+        return
+
+    added_mentions = after_mentions - before_mentions
+    removed_mentions = before_mentions - after_mentions
+
+    response = "The mentions in the message have been edited.\n"
+    if added_mentions:
+        response += f"Added mentions: {', '.join(user.name for user in added_mentions)}\n"  # noqa
+    if removed_mentions:
+        response += f"Removed mentions: {', '.join(user.name for user in removed_mentions)}"  # noqa
+
+    channel = bot.get_channel(BOT_LOG)
+    if channel:
+        embed = discord.Embed(
+            title="Ghost Ping",
+            description="A ghost ping was detected.",
+            color=0xDD2E44,
+        )
+        embed.add_field(name="Author", value=before.author.mention, inline=True)  # noqa
+        embed.add_field(
+            name="Channel", value=before.channel.mention, inline=True
+        )  # noqa
+
+        embed.add_field(
+            name="Mentions",
+            value=response,
+            inline=False,
+        )  # noqa
+
+        embed.set_footer(
+            text=f"Message ID: {before.id} | Author ID: {before.author.id}"
+        )
+
+        await channel.send(embed=embed)
+
+
 @bot.event
 async def on_message_delete(message):
+    if message.author == bot.user:
+        return
+
     channel = bot.get_channel(BOT_LOG)
     if channel:
         embed = discord.Embed(
@@ -163,10 +245,23 @@ async def on_message_delete(message):
         )  # noqa
         if message.content:
             embed.add_field(name="Content", value=message.content, inline=False)  # noqa
+
+        if message.reference is not None:
+            original_message = await message.channel.fetch_message(
+                message.reference.message_id
+            )
+
+            embed.add_field(
+                name="Replied",
+                value=original_message.author.mention,
+                inline=False,  # noqa
+            )  # noqa
+
         embed.set_footer(
             text=f"Message ID: {message.id} | Author ID: {message.author.id}"
         )
 
+        await detect_ghost_ping(message)
         await channel.send(embed=embed)
 
 
@@ -191,10 +286,38 @@ async def on_bulk_message_delete(messages):
                     name="Content", value=message.content, inline=False
                 )  # noqa
             embed.set_footer(
-                text=f"Message ID: {message.id} | Author ID: {message.author.id}" # noqa
+                text=f"Message ID: {message.id} | Author ID: {message.author.id}"  # noqa
             )
 
             await channel.send(embed=embed)
+
+
+@bot.event
+async def on_message_edit(before, after):
+    channel = bot.get_channel(BOT_LOG)
+    if channel:
+        if not before.content:
+            return
+
+        if after.content and after.content == before.content:
+            return
+
+        embed = discord.Embed(
+            title="Edited Message",
+            description="A message was edited.",
+            color=0xDD2E44,
+        )
+        embed.add_field(name="Author", value=before.author.mention, inline=True)  # noqa
+        embed.add_field(
+            name="Channel", value=before.channel.mention, inline=True
+        )  # noqa
+        embed.add_field(name="Content", value=before.content, inline=False)  # noqa
+        embed.set_footer(
+            text=f"Message ID: {before.id} | Author ID: {before.author.id}"
+        )
+
+        await detect_ghost_ping_in_edit(before, after)
+        await channel.send(embed=embed)
 
 
 @bot.event
@@ -204,13 +327,13 @@ async def on_message(message):
 
     # Too many mentions
     if len(message.mentions) >= 3:
-        await message.delete()
         member = message.guild.get_member(message.author.id)
         if member:
-            # Timeout the member for 60 seconds
+            # Timeout the member
             await member.timeout_for(
-                discord.utils.utcnow() + datetime.timedelta(seconds=60)
+                discord.utils.utcnow() + datetime.timedelta(minutes=5)
             )
+        await message.delete()
         return
 
     # Auto delete torrent if post in chat.
@@ -226,12 +349,68 @@ async def on_message(message):
     # print('Checking for patterns...')
     for pattern in patterns:
         if re.search(pattern["regex"], message.content, re.IGNORECASE):
-            # print('Checking message content:', message.content, re.IGNORECASE) # noqa
-            # print('Matching pattern regex:', pattern['regex']) # noqa
-            # print('Pattern match:', re.search(pattern['regex'], message.content, re.IGNORECASE)) # noqa
             response = pattern["response"]
-            await message.channel.send(response)
+            reply_message = await message.reply(response, mention_author=True)
+            await reply_message.add_reaction("\U0000274C")
             break
+
+
+@bot.event
+async def on_reaction_add(reaction, user):
+    if reaction.emoji != "\U0000274C":
+        return
+
+    if reaction.message.author != bot.user:
+        return
+
+    current_time = aware_utcnow()
+    time_difference = current_time - reaction.message.created_at
+    if time_difference > timedelta(minutes=5):
+        return
+
+    if reaction.message.reference is None:
+        return
+
+    original_message = await reaction.message.channel.fetch_message(
+        reaction.message.reference.message_id
+    )
+
+    if original_message.author == user:
+        await reaction.message.delete()
+
+
+def generate_random_nickname():
+    random_number = random.randint(1, 99)
+    return f"Unknown Soldier {random_number:02d}"
+
+
+def is_valid_username(username):
+    pattern = r"^[\d\x00-\x7F\xC0-\xFF]{2,}"
+    return bool(re.match(pattern, username))
+
+
+@bot.event
+async def on_member_join(member):
+    name_to_check = member.name
+
+    if member.display_name:
+        name_to_check = member.display_name
+
+    if len(name_to_check) < 3 or not is_valid_username(name_to_check):
+        new_nick = generate_random_nickname()
+        await member.edit(nick=new_nick)
+
+
+@bot.event
+async def on_member_update(before, after):
+    name_to_check = after.name
+
+    if after.nick:
+        name_to_check = after.nick
+
+    if len(name_to_check) < 3 or not is_valid_username(name_to_check):
+        new_nick = generate_random_nickname()
+        await after.edit(nick=new_nick)
 
 
 # Update Player Counts from API
