@@ -45,11 +45,11 @@
     },
     {
         "regex": "unlock(\\s)*all",
-        "response": "Just use the 'Unlock All' button in the barracks menu to get 10th prestige level 70 with everything unlocked. On S1 and IW6, you must type `unlockstats` in either the in-game console or the external console"
+        "response": "Just use the 'Unlock All' button in the barracks menu to get 10th prestige level 70 with everything unlocked. On S1 and IW6, you must type `unlockstats` in either the in-game console or the external console. MW3 does not have an unlock-all option"
     },
     {
         "regex": "unlock everything",
-        "response": "Just use the 'Unlock All' button in the barracks menu to get 10th prestige level 70 with everything unlocked. On S1 and IW6, you must type `unlockstats` in either the in-game console or the external console"
+        "response": "Just use the 'Unlock All' button in the barracks menu to get 10th prestige level 70 with everything unlocked. On S1 and IW6, you must type `unlockstats` in either the in-game console or the external console. MW3 does not have an unlock-all option"
     },
     {
         "regex": "^.*?\\b(get|buy)\\b.*?\\b(dlc|dlcs)\\b.*?$",
