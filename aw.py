@@ -227,42 +227,48 @@ async def detect_ghost_ping_in_edit(before, after):
 
 @bot.event
 async def on_message_delete(message):
-    if message.author == bot.user:
+    channel = bot.get_channel(BOT_LOG)
+    if not channel:
         return
 
-    channel = bot.get_channel(BOT_LOG)
-    if channel:
-        embed = discord.Embed(
-            title="Deleted Message",
-            description="A message was deleted.",
-            color=0xDD2E44,
-        )
-        embed.add_field(
-            name="Author", value=message.author.mention, inline=True
+    is_bot = message.author == bot.user
+    if is_bot and message.channel.id != BOT_LOG:
+        return
+
+    if is_bot:
+        await message.channel.send(
+            "You attempted to delete a message from a channel where messages are logged and stored indefinitely. Please refrain from doing so."  # noqa
         )  # noqa
-        embed.add_field(
-            name="Channel", value=message.channel.mention, inline=True
-        )  # noqa
-        if message.content:
-            embed.add_field(name="Content", value=message.content, inline=False)  # noqa
+        # It is impossible to recover the message at this point
+        return
 
-        if message.reference is not None:
-            original_message = await message.channel.fetch_message(
-                message.reference.message_id
-            )
+    embed = discord.Embed(
+        title="Deleted Message",
+        description="A message was deleted.",
+        color=0xDD2E44,
+    )
+    embed.add_field(name="Author", value=message.author.mention, inline=True)  # noqa
+    embed.add_field(name="Channel", value=message.channel.mention, inline=True)  # noqa
+    if message.content:
+        embed.add_field(name="Content", value=message.content, inline=False)  # noqa
 
-            embed.add_field(
-                name="Replied",
-                value=original_message.author.mention,
-                inline=False,  # noqa
-            )  # noqa
-
-        embed.set_footer(
-            text=f"Message ID: {message.id} | Author ID: {message.author.id}"
+    if message.reference is not None:
+        original_message = await message.channel.fetch_message(
+            message.reference.message_id
         )
 
-        await detect_ghost_ping(message)
-        await channel.send(embed=embed)
+        embed.add_field(
+            name="Replied",
+            value=original_message.author.mention,
+            inline=False,  # noqa
+        )  # noqa
+
+    embed.set_footer(
+        text=f"Message ID: {message.id} | Author ID: {message.author.id}"  # noqa
+    )  # noqa
+
+    await detect_ghost_ping(message)
+    await channel.send(embed=embed)
 
 
 @bot.event
