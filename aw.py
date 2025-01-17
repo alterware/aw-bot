@@ -14,6 +14,10 @@ GUILD_ID = 1110531063161299074
 BOT_LOG = 1112049391482703873
 GENERAL_CHANNEL = 1110531063744303138
 
+CRAZY_USER_ID = 1319364607487512658
+CRAZY_URL = "https://cdn.discordapp.com/attachments/1119371841711112314/1329770453744746559/download.png"
+crazy_last_response_time = None
+
 # Define the channel IDs where auto responds are allowed
 ALLOWED_CHANNELS = [
     GENERAL_CHANNEL,
@@ -330,6 +334,8 @@ async def on_message_edit(before, after):
 
 @bot.event
 async def on_message(message):
+    global crazy_last_response_time
+
     if message.author == bot.user:
         return
 
@@ -348,6 +354,12 @@ async def on_message(message):
     for file in message.attachments:
         if file.filename.endswith((".torrent", ".TORRENT")):
             await message.delete()
+
+    if message.author.id == CRAZY_USER_ID:
+        now = aware_utcnow()
+        if crazy_last_response_time is None or now - crazy_last_response_time >= timedelta(hours=6):
+            crazy_last_response_time = now
+            await message.channel.send(f"{CRAZY_URL}")
 
     # Check if the message is in an allowed channel
     if message.channel.id not in ALLOWED_CHANNELS:
@@ -373,7 +385,7 @@ async def on_reaction_add(reaction, user):
 
     current_time = aware_utcnow()
     time_difference = current_time - reaction.message.created_at
-    if time_difference > timedelta(minutes=5):
+    if time_difference >= timedelta(minutes=5):
         return
 
     if reaction.message.reference is None:
