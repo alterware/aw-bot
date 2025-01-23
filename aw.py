@@ -13,10 +13,13 @@ from discord.ext import commands, tasks
 GUILD_ID = 1110531063161299074
 BOT_LOG = 1112049391482703873
 GENERAL_CHANNEL = 1110531063744303138
+OFFTOPIC_CHANNEL = 1112048063448617142
 
 CRAZY_USER_ID = 1319364607487512658
 CRAZY_URL = "https://cdn.discordapp.com/attachments/1119371841711112314/1329770453744746559/download.png"
 crazy_last_response_time = None
+
+TARGET_DATE = datetime(2036, 8, 12, tzinfo=timezone.utc)
 
 # Define the channel IDs where auto responds are allowed
 ALLOWED_CHANNELS = [
@@ -510,6 +513,26 @@ async def update_status():
     await bot.change_presence(activity=activity)
 
 
+@tasks.loop(minutes=10080)
+async def heat_death():
+    try:
+        now = aware_utcnow()
+
+        remaining_seconds = int((TARGET_DATE - now).total_seconds())
+
+        print(f"Seconds until August 12, 2036, UTC: {remaining_seconds}")
+
+        channel = bot.get_channel(OFFTOPIC_CHANNEL)
+        if channel:
+            await channel.send(
+                f"Can you believe it? Only {remaining_seconds} seconds until August 12th, 2036, the heat death of the universe."
+            )
+        else:
+            print("Debug: Channel not found. Check the OFFTOPIC_CHANNEL.")
+    except Exception as e:
+        print(f"An error occurred in heat_death task: {e}")
+
+
 @bot.event
 async def on_ready():
     print(f"{bot.user.name} has connected to Discord!")
@@ -517,6 +540,7 @@ async def on_ready():
         guild=discord.Object(id=GUILD_ID)
     )  # Sync commands for a specific guild.
     update_status.start()
+    heat_death.start()
 
 
 bot.run(os.getenv("BOT_TOKEN"))
