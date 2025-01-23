@@ -462,6 +462,10 @@ def is_valid_username(username):
     return bool(re.match(pattern, username))
 
 
+def is_numeric_name(username):
+    return username.isnumeric()
+
+
 @bot.event
 async def on_member_join(member):
     name_to_check = member.name
@@ -469,7 +473,11 @@ async def on_member_join(member):
     if member.display_name:
         name_to_check = member.display_name
 
-    if len(name_to_check) < 3 or not is_valid_username(name_to_check):
+    if (
+        len(name_to_check) < 3
+        or not is_valid_username(name_to_check)
+        or is_numeric_name(name_to_check)
+    ):
         new_nick = generate_random_nickname()
         await member.edit(nick=new_nick)
 
@@ -481,7 +489,11 @@ async def on_member_update(before, after):
     if after.nick:
         name_to_check = after.nick
 
-    if len(name_to_check) < 3 or not is_valid_username(name_to_check):
+    if (
+        len(name_to_check) < 3
+        or not is_valid_username(name_to_check)
+        or is_numeric_name(name_to_check)
+    ):
         new_nick = generate_random_nickname()
         await after.edit(nick=new_nick)
 
