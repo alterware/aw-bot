@@ -332,6 +332,29 @@ async def on_message_edit(before, after):
         await channel.send(embed=embed)
 
 
+async def timeout_member(member):
+    if not member:
+        print("Debug: Member is None. Skipping timeout.")
+        return
+
+    try:
+        # Debug: Print the member object and timeout duration
+        print(f"Debug: Attempting to timeout member {member} (ID: {member.id}).")
+
+        timeout_until = timedelta(minutes=1)
+        print(f"Debug: Timeout duration set to {timeout_until}.")
+
+        await member.timeout(timedelta(minutes=1), reason="Requested by the bot")
+        print(f"Debug: Successfully timed out {member}.")
+
+    except discord.Forbidden:
+        print(f"Debug: Bot lacks permissions to timeout member {member}.")
+    except discord.HTTPException as e:
+        print(f"Debug: HTTPException occurred: {e}")
+    except Exception as e:
+        print(f"Debug: Unexpected error occurred: {e}")
+
+
 @bot.event
 async def on_message(message):
     global crazy_last_response_time
@@ -342,24 +365,54 @@ async def on_message(message):
     # Too many mentions
     if len(message.mentions) >= 3:
         member = message.guild.get_member(message.author.id)
-        if member:
-            # Timeout the member
-            await member.timeout_for(
-                discord.utils.utcnow() + datetime.timedelta(minutes=5)
-            )
+        await timeout_member(member)
         await message.delete()
         return
 
     # Auto delete torrent if post in chat.
     for file in message.attachments:
         if file.filename.endswith((".torrent", ".TORRENT")):
+            member = message.guild.get_member(message.author.id)
+            await timeout_member(member)
             await message.delete()
 
     if message.author.id == CRAZY_USER_ID:
         now = aware_utcnow()
-        if crazy_last_response_time is None or now - crazy_last_response_time >= timedelta(hours=6):
+        if (
+            crazy_last_response_time is None
+            or now - crazy_last_response_time >= timedelta(hours=8)
+        ):
             crazy_last_response_time = now
             await message.channel.send(f"{CRAZY_URL}")
+
+    guild = message.guild
+    for channel in guild.text_channels:
+        if channel.id == message.channel.id:
+            continue
+
+        try:
+            async for msg in channel.history(limit=5):
+                # Too many false positives
+                if msg.embeds:
+                    continue
+                # ^^
+                if message.attachments:
+                    continue
+                # ^^
+                if not message.content.strip():
+                    continue
+
+                if msg.author == message.author and msg.content == message.content:
+                    await message.channel.send(
+                        f"Hey {message.author.name}, you've already sent this message in {channel.mention}!"
+                    )
+                    member = message.guild.get_member(message.author.id)
+                    await timeout_member(member)
+                    return
+        except discord.Forbidden:
+            print(f"Bot does not have permission to read messages in {channel.name}.")
+        except discord.HTTPException as e:
+            print(f"An error occurred: {e}")
 
     # Check if the message is in an allowed channel
     if message.channel.id not in ALLOWED_CHANNELS:
