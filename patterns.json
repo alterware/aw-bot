@@ -58,5 +58,9 @@
     {
         "regex": "steam(\\s)*deck",
         "response": "Are you wondering how to install our clients on the Steam Deck? Check out this guide: https://forum.alterware.dev/t/playing-alterware-on-linux-guide-desktop-handheld/1036"
+    },
+    {
+        "regex": "0x593A1A",
+        "response": "This is a known issue. Try to delete the players to reset your stats. This issue is known to happen to modded servers. You may try to join a non-modded server for the time being."
     }
 ]

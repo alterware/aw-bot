@@ -406,6 +406,13 @@ async def on_message(message):
                     continue
 
                 if msg.author == message.author and msg.content == message.content:
+                    current_time = aware_utcnow()
+                    message_time = msg.created_at
+
+                    time_difference = current_time - message_time
+                    if time_difference >= timedelta(minutes=5):
+                        continue
+
                     await message.channel.send(
                         f"Hey {message.author.name}, you've already sent this message in {channel.mention}!"
                     )
