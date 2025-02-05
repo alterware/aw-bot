@@ -61,6 +61,10 @@
     },
     {
         "regex": "0x593A1A",
-        "response": "This is a known issue. Try to delete the players to reset your stats. This issue is known to happen to modded servers. You may try to join a non-modded server for the time being."
+        "response": "This is a known issue. Try to delete the players to reset your stats. This issue is known to happen to modded servers. You may try to join a non-modded server for the time being"
+    },
+    {
+        "regex": "stat version 159",
+        "response": "Update IW4x. See: https://forum.alterware.dev/t/how-to-install-the-alterware-launcher/56 Do not bypass the AlterWare launcher. Always use it to open IW4x (do not double-click iw4x.exe!)"
     }
 ]

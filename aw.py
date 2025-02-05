@@ -535,7 +535,7 @@ async def heat_death():
                 f"Can you believe it? Only {remaining_seconds} seconds until August 12th, 2036, the heat death of the universe."
             )
         else:
-            print("Debug: Channel not found. Check the OFFTOPIC_CHANNEL.")
+            print("Debug: Channel not found. Check the OFFTOPIC_CHANNEL variable.")
     except Exception as e:
         print(f"An error occurred in heat_death task: {e}")
 
