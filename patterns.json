@@ -8,6 +8,14 @@
         "response": "Yes, it is required to own a copy of the game to utilize our clients"
     },
     {
+        "regex": "need to own",
+        "response": "Yes, it is required to own a copy of the game to utilize our clients"
+    },
+    {
+        "regex": "have to own",
+        "response": "Yes, it is required to own a copy of the game to utilize our clients"
+    },
+    {
         "regex": "^.*?\\bbuy\\b.*?\\btwice\\b.*?$",
         "response": "There is no stipulation in the law that entitles you to a free PC copy of the game if you bought it on another platform"
     },
@@ -66,5 +74,21 @@
     {
         "regex": "stat version 159",
         "response": "Update IW4x. See: https://forum.alterware.dev/t/how-to-install-the-alterware-launcher/56 Do not bypass the AlterWare launcher. Always use it to open IW4x (do not double-click iw4x.exe!)"
+    },
+    {
+        "regex": "nerd",
+        "response": "https://cdn.discordapp.com/attachments/851043611461812224/1137159708206186647/mqdefault.jpg"
+    },
+    {
+        "regex": "jezuz",
+        "response": "https://tenor.com/view/jesus-risen-starlight-glimmer-sparkle-gif-16978750?quality=lossless"
+    },
+    {
+        "regex": "gsc developer",
+        "response": "https://cdn.discordapp.com/attachments/894500973349863474/1168980798947459153/726six.jpg"
+    },
+    {
+        "regex": "gsc method",
+        "response": "https://cdn.discordapp.com/attachments/894500973349863474/1179482977944748062/image-26.png"
     }
 ]
