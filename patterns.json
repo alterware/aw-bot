@@ -16,6 +16,22 @@
         "response": "Yes, it is required to own a copy of the game to utilize our clients"
     },
     {
+        "regex": "steam must be installed",
+        "response": "Pirated copies of Black Ops 3 are not supported. Buy Black Ops 3 on Steam"
+    },
+    {
+        "regex": "steam not properly",
+        "response": "Pirated copies of Black Ops 3 are not supported. Buy Black Ops 3 on Steam"
+    },
+    {
+        "regex": "steam must be running",
+        "response": "Pirated copies of Black Ops 3 are not supported. Buy Black Ops 3 on Steam"
+    },
+    {
+        "regex": "failed to verify",
+        "response": "Pirated copies of Black Ops 3 are not supported. Buy Black Ops 3 on Steam"
+    },
+    {
         "regex": "^.*?\\bbuy\\b.*?\\btwice\\b.*?$",
         "response": "There is no stipulation in the law that entitles you to a free PC copy of the game if you bought it on another platform"
     },
