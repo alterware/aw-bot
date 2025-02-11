@@ -32,6 +32,10 @@
         "response": "Pirated copies of Black Ops 3 are not supported. Buy Black Ops 3 on Steam"
     },
     {
+        "regex": "Failed to read game binary",
+        "response": "Pirated copies of the game are not supported. Buy the game on Steam. Once you have made the purchase, wait for both MP and SP to install"
+    },
+    {
         "regex": "^.*?\\bbuy\\b.*?\\btwice\\b.*?$",
         "response": "There is no stipulation in the law that entitles you to a free PC copy of the game if you bought it on another platform"
     },
@@ -85,7 +89,11 @@
     },
     {
         "regex": "0x593A1A",
-        "response": "This is a known issue. Try to delete the players to reset your stats. This issue is known to happen to modded servers. You may try to join a non-modded server for the time being"
+        "response": "This is a known issue. Try to delete the players folder to reset your stats. This issue is known to happen to modded servers. You may try to join a non-modded server for the time being"
+    },
+    {
+        "regex": "0x42854A",
+        "response": "This is a known issue. There is nothing we can do to help you at this time. This issue is known to happen when there are test clients (bots) using helicopter-based killstreaks. More time is needed to find the root cause of this issue. There is no evidence using the Bot Warfare mod is the actual root cause"
     },
     {
         "regex": "stat version 159",
