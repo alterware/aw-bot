@@ -114,5 +114,49 @@
     {
         "regex": "gsc method",
         "response": "https://cdn.discordapp.com/attachments/894500973349863474/1179482977944748062/image-26.png"
+    },
+    {
+        "regex": "schizophrenic",
+        "response": "https://cdn.discordapp.com/attachments/1112049391482703873/1341152951636594750/X2Download.app-AI_Sponge_-_THEY_STOLE_MY_ORGANS.mp4"
+    },
+    {
+        "regex": "heroin",
+        "response": "https://cdn.discordapp.com/attachments/1112049391482703873/1341154353032986656/videoplayback_8.mp4"
+    },
+    {
+        "regex": "shut up",
+        "response": "https://cdn.discordapp.com/attachments/1112049391482703873/1341153985972666378/AI_SpongeBob_finally_snaps.mp4"
+    },
+    {
+        "regex": "cursed",
+        "response": "https://cdn.discordapp.com/attachments/1160511084143312959/1239675206428000328/CRACKS.mp4"
+    },
+    {
+        "regex": "cough",
+        "response": "https://cdn.discordapp.com/attachments/1112049391482703873/1341153831081476136/007d7294a47af771bc539182c64baabf.mp4"
+    },
+    {
+        "regex": "trans rights",
+        "response": "https://cdn.discordapp.com/attachments/1112049391482703873/1341153777243394088/Loudward_goes_insane_and_cracks_his_dick.mp4"
+    },
+    {
+        "regex": "cracks dick",
+        "response": "https://cdn.discordapp.com/attachments/1112049391482703873/1341153519079784478/AI_Sponge__Loudward_cracks_his....like_a_glowstick_causing_him_to_stroke_out.mp4"
+    },
+    {
+        "regex": "lua",
+        "response": "https://cdn.discordapp.com/attachments/1112049391482703873/1341156252197064704/image-4.png"
+    },
+    {
+        "regex": "facepalm",
+        "response": "https://cdn.discordapp.com/attachments/1112049391482703873/1341156374142386248/6a66d872184fcd5188a3734331d6f3a2.mp4"
+    },
+    {
+        "regex": "chernobyl",
+        "response": "https://cdn.discordapp.com/attachments/1112049391482703873/1341156582565875834/dda5e31346cd012a04765a97062cdc9c.mp4"
+    },
+    {
+        "regex": "batman",
+        "response": "https://cdn.discordapp.com/attachments/1160511084143312959/1341157374546808902/ssstwitter.com_1708525519745.mp4"
     }
 ]
