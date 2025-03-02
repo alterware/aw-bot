@@ -2,11 +2,12 @@ FROM python:alpine
 
 WORKDIR /aw-bot
 
-COPY . /aw-bot
+COPY requirements.txt .  
+RUN pip install --no-cache-dir -r requirements.txt  
 
-RUN pip install --no-cache-dir -r requirements.txt
-
-COPY patterns.json /aw-bot
+COPY bot /aw-bot/bot  
+COPY aw.py .  
+COPY patterns.json .  
 
 ENV BOT_TOKEN=""
 

@@ -1,0 +1,35 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+venv/
+.env/
+.venv/
+env/
+ENV/
+
+# Discord token and other environment variables
+.env
+*.env
+
+# Logs and debug files
+logs/
+*.log
+
+# IDE / Editor settings
+.vscode/
+.idea/
+*.iml
+
+# Python package files
+*.egg
+*.egg-info/
+dist/
+build/
+pip-wheel-metadata/
+
+# OS-generated files
+.DS_Store
+Thumbs.db
