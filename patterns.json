@@ -32,6 +32,10 @@
         "response": "Pirated copies of Black Ops 3 are not supported. Buy Black Ops 3 on Steam"
     },
     {
+        "regex": "Failed to read game binary",
+        "response": "Pirated copies of the game are not supported. Buy the game on Steam. Once you have made the purchase, wait for both MP and SP to install"
+    },
+    {
         "regex": "^.*?\\bbuy\\b.*?\\btwice\\b.*?$",
         "response": "There is no stipulation in the law that entitles you to a free PC copy of the game if you bought it on another platform"
     },
@@ -85,7 +89,11 @@
     },
     {
         "regex": "0x593A1A",
-        "response": "This is a known issue. Try to delete the players to reset your stats. This issue is known to happen to modded servers. You may try to join a non-modded server for the time being"
+        "response": "This is a known issue. Try to delete the players folder to reset your stats. This issue is known to happen to modded servers. You may try to join a non-modded server for the time being"
+    },
+    {
+        "regex": "0x42854A",
+        "response": "This is a known issue. There is nothing we can do to help you at this time. This issue is known to happen when there are test clients (bots) using helicopter-based killstreaks. More time is needed to find the root cause of this issue. There is no evidence using the Bot Warfare mod is the actual root cause"
     },
     {
         "regex": "stat version 159",
@@ -106,5 +114,189 @@
     {
         "regex": "gsc method",
         "response": "https://cdn.discordapp.com/attachments/894500973349863474/1179482977944748062/image-26.png"
+    },
+    {
+        "regex": "schizophrenic",
+        "response": "https://cdn.discordapp.com/attachments/1112049391482703873/1341152951636594750/X2Download.app-AI_Sponge_-_THEY_STOLE_MY_ORGANS.mp4"
+    },
+    {
+        "regex": "heroin",
+        "response": "https://cdn.discordapp.com/attachments/1112049391482703873/1341154353032986656/videoplayback_8.mp4"
+    },
+    {
+        "regex": "shut up",
+        "response": "https://cdn.discordapp.com/attachments/1112049391482703873/1341153985972666378/AI_SpongeBob_finally_snaps.mp4"
+    },
+    {
+        "regex": "cursed",
+        "response": "https://cdn.discordapp.com/attachments/1160511084143312959/1239675206428000328/CRACKS.mp4"
+    },
+    {
+        "regex": "cough",
+        "response": "https://cdn.discordapp.com/attachments/1112049391482703873/1341153831081476136/007d7294a47af771bc539182c64baabf.mp4"
+    },
+    {
+        "regex": "trans rights",
+        "response": "https://cdn.discordapp.com/attachments/1112049391482703873/1341153777243394088/Loudward_goes_insane_and_cracks_his_dick.mp4"
+    },
+    {
+        "regex": "cracks dick",
+        "response": "https://cdn.discordapp.com/attachments/1112049391482703873/1341153519079784478/AI_Sponge__Loudward_cracks_his....like_a_glowstick_causing_him_to_stroke_out.mp4"
+    },
+    {
+        "regex": "lua",
+        "response": "https://cdn.discordapp.com/attachments/1112049391482703873/1341156252197064704/image-4.png"
+    },
+    {
+        "regex": "facepalm",
+        "response": "https://cdn.discordapp.com/attachments/1112049391482703873/1341156374142386248/6a66d872184fcd5188a3734331d6f3a2.mp4"
+    },
+    {
+        "regex": "chernobyl",
+        "response": "https://cdn.discordapp.com/attachments/1112049391482703873/1341156582565875834/dda5e31346cd012a04765a97062cdc9c.mp4"
+    },
+    {
+        "regex": "batman",
+        "response": "https://cdn.discordapp.com/attachments/1160511084143312959/1341157374546808902/ssstwitter.com_1708525519745.mp4"
+    },
+    {
+        "regex": "carter",
+        "response": "https://cdn.discordapp.com/attachments/1112048063448617142/1324324805964726322/GgOfijfXgAAw3J7.jpg"
+    },
+    {
+        "regex": "tuah",
+        "response": "https://cdn.discordapp.com/attachments/1160511084143312959/1341378652335505440/GfgqVXFbgAA3p7d.jpg"
+    },
+    {
+        "regex": "sql",
+        "response": "https://cdn.discordapp.com/attachments/1112049391482703873/1341379024236318820/nG7gHL5ghjBHd2Ki.jpg"
+    },
+    {
+        "regex": "monkey",
+        "response": "https://tenor.com/view/orangutan-monkey-shirt-takethatshirtoff-t%E3%82%B7%E3%83%A3%E3%83%84-gif-5159144"
+    },
+    {
+        "regex": "after sex",
+        "response": "https://cdn.discordapp.com/attachments/1112048063448617142/1288585431134503055/20240925_203639.jpg"
+    },
+    {
+        "regex": "llvm",
+        "response": "https://cdn.discordapp.com/attachments/1112048063448617142/1287012580644229220/20240921_132819.jpg"
+    },
+    {
+        "regex": "halal",
+        "response": "https://cdn.discordapp.com/attachments/1112049391482703873/1344378904650973347/x2mate.com-HALAL_ALERT720p.mp4"
+    },
+    {
+        "regex": "muoio",
+        "response": "https://cdn.discordapp.com/attachments/1112049391482703873/1344380317598748862/muoio-stasera-160-km-h-incidente-fraaaa-risate-720-ytshorts.savetube.me.mp4"
+    },
+    {
+        "regex": "mkultra",
+        "response": "https://cdn.discordapp.com/attachments/1112049391482703873/1344380993854771341/ssstwitter.com_1709723812005.mp4"
+    },
+    {
+        "regex": "plutonium sdk",
+        "response": "https://cdn.discordapp.com/attachments/1112049391482703873/1344381038763446272/Untitled_video_-_Made_with_Clipchamp_1.mp4"
+    },
+    {
+        "regex": "it is what it is",
+        "response": "https://cdn.discordapp.com/attachments/1112049391482703873/1344381117628813403/1709131541.mp4"
+    },
+    {
+        "regex": "6arelyfuture",
+        "response": "https://cdn.discordapp.com/attachments/1186037926455422986/1289944367834075179/Futurerave.gif"
+    },
+    {
+        "regex": "dementia",
+        "response": "https://cdn.discordapp.com/attachments/1112049391482703873/1344382719819382886/loudward_has_dementia_ai_sponge_clip.mp4"
+    },
+    {
+        "regex": "dictator",
+        "response": "https://cdn.discordapp.com/attachments/1112049391482703873/1344383091396837376/e1d2b6caa8bd0ac2c5db7a291dbd89f8.mp4"
+    },
+    {
+        "regex": "ketamine",
+        "response": "https://cdn.discordapp.com/attachments/1112049391482703873/1344383357819293716/x2mate.com-AI_Sponge_finds_out_about_Mr._Krabs_Ketamine_addiction_.mp4"
+    },
+    {
+        "regex": "uk music",
+        "response": "https://cdn.discordapp.com/attachments/1112049391482703873/1344383363460628551/Pov_you_dont_like_UK_music.mp4"
+    },
+    {
+        "regex": "ambatukam",
+        "response": "https://cdn.discordapp.com/attachments/1112049391482703873/1344383777908068433/ambatukam_.mp4"
+    },
+    {
+        "regex": "scientology",
+        "response": "https://cdn.discordapp.com/attachments/1112049391482703873/1344383967016648816/scientology-ot-levels.pdf"
+    },
+    {
+        "regex": "naxet",
+        "response": "https://cdn.discordapp.com/attachments/1112049391482703873/1344384024755441887/Loudward_hates_NAXET_-_AI_Sponge.mp4"
+    },
+    {
+        "regex": "bowser fart",
+        "response": "https://cdn.discordapp.com/attachments/1112049391482703873/1344384201734230157/yt5s.io-STOP_POSTING_ABOUT_BOWSER_FART_GIF___AI_Sponge360p.mp4"
+    },
+    {
+        "regex": "quandale dingle",
+        "response": "https://cdn.discordapp.com/attachments/1112049391482703873/1344384315416641609/Quandale_Dingle_Lore_Animated.mp4"
+    },
+    {
+        "regex": "jerk(?:ing)? off",
+        "response": "https://cdn.discordapp.com/attachments/1160511084143312959/1345021699674079402/Loudward_Jerks_Off.mp4"
+    },
+    {
+        "regex": "cursed",
+        "response": "https://cdn.discordapp.com/attachments/1160511084143312959/1345011761287532614/ssstwitter.com_1740712522072.mp4"
+    },
+    {
+        "regex": "now hiring",
+        "response": "https://media.discordapp.net/attachments/1160511084143312959/1334579523538124914/image.png"
+    },
+    {
+        "regex": "nothing ever happens",
+        "response": "Here is your nothing ever happens award:tm:"
+    },
+    {
+        "regex": "glory hole",
+        "response": "https://media.discordapp.net/attachments/1160511084143312959/1345060889530732616/GklsYd0WgAAyjIH.jpg"
+    },
+    {
+        "regex": "skull emoji",
+        "response": "https://tenor.com/view/rotating-skull-gif-24524852"
+    },
+    {
+        "regex": "jumpscare",
+        "response": "https://media.tenor.com/o2yeBaU9N4wAAAPo/gogeta-dbz.mp4"
+    },
+    {
+        "regex": "poland",
+        "response": "https://tenor.com/view/scream-love-poland-gif-10918710646251769391"
+    },
+    {
+        "regex": "femboy",
+        "response": "https://media.discordapp.net/attachments/1184678320865034240/1185690758091636856/Lmao.gif"
+    },
+    {
+        "regex": "6arelyhuman",
+        "response": "https://tenor.com/view/fxndierratas21-6arely-ur-vampire-scene-6arelyhuman-gif-13015213947104982502"
+    },
+    {
+        "regex": "pelican",
+        "response": "https://tenor.com/view/pelican-angry-bite-gif-25461149"
+    },
+    {
+        "regex": "strok(?:ing)?",
+        "response": "https://tenor.com/view/cat-cat-tongue-cat-licking-white-cat-cursed-cat-gif-27575167"
+    },
+    {
+        "regex": "fart",
+        "response": "https://cdn.discordapp.com/attachments/859493091681370122/1143650713583497288/d11e8a6fd9dfd7dd4d23cc7196e1be1a.mp4"
+    },
+    {
+        "regex": "cocaine",
+        "response": "https://cdn.discordapp.com/attachments/1160511084143312959/1345511700648038501/image.png"
     }
 ]
