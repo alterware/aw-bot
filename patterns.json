@@ -298,5 +298,9 @@
     {
         "regex": "cocaine",
         "response": "https://cdn.discordapp.com/attachments/1160511084143312959/1345511700648038501/image.png"
+    },
+    {
+        "regex": "alterwater",
+        "response": "https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExbWRtYXgwZnBpMnlpOTIyZm5mOXlhNGE4cmdpcnBiYW42NDBlcGljbCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/BotoBC44860YjP1aEk/giphy.gif"
     }
 ]

@@ -51,11 +51,17 @@ class SteamSaleChecker(commands.Cog):
                     return
 
                 price_info = data.get("price_overview", {})
+                header_image = data.get("header_image", None)
 
                 if not price_info:
-                    await channel.send(
-                        f"{game_name} is currently unavailable for purchase."
+                    embed = discord.Embed(
+                        title=game_name,
+                        description="{game_name} is currently unavailable for purchase.",
+                        color=discord.Color.red(),
                     )
+                    embed.set_thumbnail(url=header_image if header_image else "")
+                    await channel.send(embed=embed)
+
                     return
 
                 original_price = price_info.get("initial", 0) / 100
@@ -64,14 +70,29 @@ class SteamSaleChecker(commands.Cog):
                 store_url = f"https://store.steampowered.com/app/{app_id}/"
 
                 if discount_percent > 0:
-                    message = (
-                        f"**{game_name} is on sale!**\n"
-                        f"Original Price: **${original_price:.2f}**\n"
-                        f"Discounted Price: **${discounted_price:.2f}** (**-{discount_percent}%**)\n"
-                        f"[View on Steam]({store_url})\n"
+                    embed = discord.Embed(
+                        title=f"{game_name} is on Sale!",
+                        description=f"-{discount_percent}% OFF!",
+                        color=discord.Color.green(),
                     )
 
-                    await channel.send(message)
+                    embed.set_thumbnail(url=header_image if header_image else "")
+                    embed.add_field(
+                        name="Original Price",
+                        value=f"~~${original_price:.2f}~~",
+                        inline=True,
+                    )
+                    embed.add_field(
+                        name="Discounted Price",
+                        value=f"**${discounted_price:.2f}**",
+                        inline=True,
+                    )
+                    embed.add_field(
+                        name="Steam Store",
+                        value=f"[View on Steam]({store_url})",
+                        inline=False,
+                    )
+                    await channel.send(embed=embed)
 
             except requests.RequestException as e:
                 print(f"Error fetching Steam sale data for {game_name}: {e}")
