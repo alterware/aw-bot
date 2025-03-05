@@ -1,0 +1,5 @@
+CREATE TABLE IF NOT EXISTS message_patterns (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    regex TEXT NOT NULL,
+    response TEXT NOT NULL
+)

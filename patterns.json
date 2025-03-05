@@ -330,5 +330,9 @@
     {
         "regex": "andrew tate",
         "response": "https://cdn.discordapp.com/attachments/1112049391482703873/1346497706964815952/GlEMX4TWQAAUqlc.jpg"
+    },
+    {
+        "regex": "suicide",
+        "response": "https://cdn.discordapp.com/attachments/1160511084143312959/1346587278499119234/Snapinst.app_video_AQPJue2aNWd3IuxSsCqEwyFbm7FweOLHfRPFQIfk4U7J9krpIydfGSTdmXqa04ozGljyxNCVBjqu-cHgEAw1LMX4ImX1Zr849d7cUc4.mp4"
     }
 ]

@@ -3,6 +3,8 @@ import os
 import discord
 from discord.ext import commands
 
+from database import initialize_db
+
 GUILD_ID = 1110531063161299074
 BOT_LOG = 1112049391482703873
 GENERAL_CHANNEL = 1110531063744303138
@@ -10,6 +12,8 @@ OFFTOPIC_CHANNEL = 1112048063448617142
 
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix="!", intents=intents)
+
+initialize_db()
 
 
 @bot.event

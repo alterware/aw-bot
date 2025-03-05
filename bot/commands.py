@@ -3,6 +3,9 @@ from typing import Literal
 import discord
 from discord import app_commands
 
+from database import add_pattern
+
+from bot.config import update_patterns
 from bot.utils import compile_stats, fetch_game_stats, perform_search
 
 GUILD_ID = 1110531063161299074
@@ -24,6 +27,22 @@ async def setup(bot):
             raise error
 
     bot.tree.on_error = on_tree_error
+
+    @bot.tree.command(
+        name="add_pattern",
+        description="Add a new message pattern to the database.",
+        guild=discord.Object(id=GUILD_ID),
+    )
+    @app_commands.checks.has_permissions(administrator=True)
+    async def add_pattern_cmd(
+        interaction: discord.Interaction, regex: str, response: str
+    ):
+        """Slash command to add a new message pattern to the database."""
+        add_pattern(regex, response)
+        update_patterns(regex, response)
+        await interaction.response.send_message(
+            f"Pattern added!\n**Regex:** `{regex}`\n**Response:** `{response}`"
+        )
 
     @bot.tree.command(
         name="search",
