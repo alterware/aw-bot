@@ -19,6 +19,8 @@ def initialize_db():
     conn.commit()
     conn.close()
 
+    print(f"Done loading database: {DB_PATH}")
+
 
 def add_pattern(regex: str, response: str):
     """Adds a new pattern to the database."""

@@ -8,7 +8,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY bot /aw-bot/bot
 COPY database /aw-bot/database
 COPY aw.py .
-COPY patterns.json .
 
 ENV BOT_TOKEN=""
 
