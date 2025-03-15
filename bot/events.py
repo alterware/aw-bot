@@ -122,6 +122,15 @@ async def setup(bot):
             await message.delete()
             return
 
+        if "@everyone" in message.content or "@here" in message.content:
+            if not message.channel.permissions_for(message.author).mention_everyone:
+                await message.reply(
+                    "Dink Donk! Time to ping everyone!", mention_author=True
+                )
+                member = message.guild.get_member(message.author.id)
+                await timeout_member(member)
+                return
+
         # Auto delete torrent if post in chat.
         for file in message.attachments:
             if file.filename.endswith((".torrent", ".TORRENT")):
