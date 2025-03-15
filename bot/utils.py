@@ -67,7 +67,11 @@ async def perform_search(query: str):
 
 
 # Timeout a member
-async def timeout_member(member: discord.Member):
+async def timeout_member(
+    member: discord.Member,
+    duration: timedelta = timedelta(minutes=1),
+    reason: str = "Requested by the bot",
+):
     if not member:
         print("Debug: Member is None. Skipping timeout.")
         return
@@ -75,11 +79,10 @@ async def timeout_member(member: discord.Member):
     try:
         # Debug: Print the member object and timeout duration
         print(f"Debug: Attempting to timeout member {member} (ID: {member.id}).")
+        print(f"Debug: Timeout duration set to {duration}.")
+        print(f"Debug: Reason: {reason}")
 
-        timeout_until = timedelta(minutes=1)
-        print(f"Debug: Timeout duration set to {timeout_until}.")
-
-        await member.timeout(timeout_until, reason="Requested by the bot")
+        await member.timeout(duration, reason=reason)
         print(f"Debug: Successfully timed out {member}.")
 
     except discord.Forbidden:
