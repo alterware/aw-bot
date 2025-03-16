@@ -1,4 +1,9 @@
 from bot.utils import generate_random_nickname, is_valid_username, is_numeric_name
+from database import user_has_role
+
+import discord
+
+SPAM_ROLE_ID = 1350511935677927514
 
 
 async def handle_member_join(member):
@@ -14,6 +19,11 @@ async def handle_member_join(member):
     ):
         new_nick = generate_random_nickname()
         await member.edit(nick=new_nick)
+
+    if user_has_role(member.id):
+        spam_role = discord.utils.get(member.guild.roles, id=SPAM_ROLE_ID)
+        if spam_role:
+            await member.add_roles(spam_role)
 
 
 async def handle_member_update(before, after):

@@ -1,8 +1,11 @@
 from datetime import timedelta
 import re
 import discord
+
 from bot.utils import timeout_member, aware_utcnow
 from bot.config import message_patterns
+
+from database import add_user_to_role
 
 BOT_LOG = 1112049391482703873
 
@@ -210,7 +213,12 @@ async def handle_message(message, bot):
             spam_role = message.guild.get_role(SPAM_ROLE_ID)
             member = message.guild.get_member(message.author.id)
 
-            await member.add_roles(spam_role)
+            # Check if the member already has the spam role
+            if spam_role not in member.roles:
+                await member.add_roles(spam_role)
+
+                # Add the user to the database
+                add_user_to_role(member.id, SPAM_ROLE_ID)
 
             await message.reply(
                 f"Dink Donk! Time to ping everyone! {spam_role.mention}",

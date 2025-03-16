@@ -6,8 +6,12 @@ from discord.ext import tasks, commands
 
 from bot.utils import aware_utcnow, fetch_api_data
 
+from database import migrate_users_with_role
+
 TARGET_DATE = datetime(2036, 8, 12, tzinfo=timezone.utc)
 OFFTOPIC_CHANNEL = 1112048063448617142
+
+SPAM_ROLE_ID = 1350511935677927514
 
 COD_GAMES = {
     10180: {"name": "Modern Warfare 2 (2009)", "channel": 1145458108190163014},
@@ -16,6 +20,16 @@ COD_GAMES = {
     209650: {"name": "Call of Duty: Advanced Warfare", "channel": 1145469136919613551},
     311210: {"name": "Call of Duty: Black Ops 3", "channel": 1180796251529293844},
 }
+
+
+async def migrate_all_users(bot):
+    # Fetch users with the SPAM_ROLE_ID and migrate them to the database
+    guild = discord.utils.get(bot.guilds)
+    if guild:
+        spam_role = discord.utils.get(guild.roles, id=SPAM_ROLE_ID)
+        if spam_role:
+            for member in spam_role.members:
+                migrate_users_with_role(member.id, SPAM_ROLE_ID)
 
 
 class SteamSaleChecker(commands.Cog):
@@ -131,6 +145,8 @@ async def setup(bot):
                 print("Debug: Channel not found. Check the OFFTOPIC_CHANNEL variable.")
         except Exception as e:
             print(f"An error occurred in heat_death task: {e}")
+
+    await migrate_all_users(bot)
 
     update_status.start()
     heat_death.start()

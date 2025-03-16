@@ -1,6 +1,8 @@
 import sqlite3
 import os
 
+from bot.utils import aware_utcnow
+
 DB_DIR = os.getenv("BOT_DATA_DIR", "/bot-data")
 DB_PATH = os.path.join(DB_DIR, "database.db")
 
@@ -55,3 +57,44 @@ def remove_pattern(pattern_id: int):
     cursor.execute("DELETE FROM message_patterns WHERE id = ?", (pattern_id,))
     conn.commit()
     conn.close()
+
+
+def migrate_users_with_role(user_id: int, role_id: int):
+    """Migrates existing users with the role to the new table."""
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+
+    cursor.execute(
+        "INSERT OR IGNORE INTO user_roles (user_id, role_id, date_assigned) VALUES (?, ?, ?)",
+        (user_id, role_id, aware_utcnow().isoformat()),
+    )
+
+    conn.commit()
+    conn.close()
+
+
+def add_user_to_role(user_id: int, role_id: int):
+    """Adds a new user when they receive the role."""
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+
+    cursor.execute(
+        "INSERT OR REPLACE INTO user_roles (user_id, role_id, date_assigned) VALUES (?, ?, ?)",
+        (user_id, role_id, aware_utcnow().isoformat()),
+    )
+
+    conn.commit()
+    conn.close()
+
+
+def user_has_role(user_id: int):
+    """Checks if a user is in the database."""
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT * FROM user_roles WHERE user_id = ?", (user_id,))
+    result = cursor.fetchone()
+
+    conn.close()
+
+    return result is not None
