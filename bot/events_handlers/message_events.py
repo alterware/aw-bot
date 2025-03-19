@@ -32,6 +32,24 @@ ALLOWED_CHANNELS = [
 SPAM_ROLE_ID = 1350511935677927514
 
 
+async def was_message_replied_by_bot(message, bot):
+    """
+    Checks if a deleted message was replied to by a later message from the bot.
+
+    Args:
+        message (discord.Message): The deleted message.
+        bot (discord.Client): The bot instance.
+
+    Returns:
+        discord.Message or None: The bot's reply message if it exists, otherwise None.
+    """
+    async for later_message in message.channel.history(after=message.created_at):
+        if later_message.reference and later_message.reference.message_id == message.id:
+            if later_message.author == bot.user:
+                return later_message
+    return None
+
+
 async def detect_ghost_ping(message, bot):
     if not message.mentions:
         return
@@ -120,8 +138,8 @@ async def handle_message_edit(before, after, bot):
     embed.add_field(name="Content", value=before.content, inline=False)  # noqa
     embed.set_footer(text=f"Message ID: {before.id} | Author ID: {before.author.id}")
 
-    await detect_ghost_ping_in_edit(before, after, bot)
     await channel.send(embed=embed)
+    await detect_ghost_ping_in_edit(before, after, bot)
 
 
 async def handle_bulk_message_delete(messages, bot):
@@ -191,8 +209,14 @@ async def handle_message_delete(message, bot):
         text=f"Message ID: {message.id} | Author ID: {message.author.id}"  # noqa
     )  # noqa
 
-    await detect_ghost_ping(message, bot)
     await channel.send(embed=embed)
+    await detect_ghost_ping(message, bot)
+
+    bot_reply = await was_message_replied_by_bot(message, bot)
+    if bot_reply:
+        await message.channel.send(
+            f"{message.author.mention} I thought we had something special going on, why did you delete your message?"
+        )
 
 
 async def handle_message(message, bot):
