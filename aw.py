@@ -1,3 +1,4 @@
+from dotenv import load_dotenv
 import os
 
 import discord
@@ -12,6 +13,9 @@ OFFTOPIC_CHANNEL = 1112048063448617142
 
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix="!", intents=intents)
+
+# Load environment variables from .env file (if it exists)
+load_dotenv(override=True)
 
 initialize_db()
 

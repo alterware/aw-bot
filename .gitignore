@@ -18,6 +18,9 @@ ENV/
 logs/
 *.log
 
+# App specific
+bot-data/
+
 # IDE / Editor settings
 .vscode/
 .idea/

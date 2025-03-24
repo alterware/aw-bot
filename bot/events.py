@@ -6,6 +6,7 @@ from bot.events_handlers import (
     handle_bulk_message_delete,
     handle_message_delete,
     handle_message,
+    handle_voice_state_update,
 )
 
 
@@ -37,5 +38,9 @@ async def setup(bot):
     @bot.event
     async def on_message_edit(before, after):
         await handle_message_edit(before, after, bot)
+
+    @bot.event
+    async def on_voice_state_update(member, before, after):
+        await handle_voice_state_update(member, before, after, bot)
 
     print("Events extension loaded!")

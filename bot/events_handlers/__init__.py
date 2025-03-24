@@ -6,3 +6,4 @@ from .message_events import (
     handle_message_delete,
     handle_message,
 )
+from .voice_events import handle_voice_state_update

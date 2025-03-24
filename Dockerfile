@@ -1,4 +1,6 @@
-FROM python:alpine
+FROM python:slim-bookworm
+
+RUN apt update && apt install -y ffmpeg
 
 WORKDIR /aw-bot
 
@@ -7,6 +9,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY bot /aw-bot/bot
 COPY database /aw-bot/database
+COPY sounds /aw-bot/sounds
 COPY aw.py .
 
 ENV BOT_TOKEN=""
