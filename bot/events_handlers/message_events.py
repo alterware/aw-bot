@@ -38,6 +38,47 @@ async def handle_dm(message):
     )
 
 
+async def is_message_a_duplicate(message):
+    guild = message.guild
+    for channel in guild.text_channels:
+        if channel.id == message.channel.id:
+            continue
+
+        try:
+            async for msg in channel.history(limit=5):
+                # Too many false positives
+                if msg.embeds:
+                    continue
+                # ^^
+                if message.attachments:
+                    continue
+                # ^^
+                if not message.content.strip():
+                    continue
+
+                if msg.author == message.author and msg.content == message.content:
+                    current_time = aware_utcnow()
+                    message_time = msg.created_at
+
+                    time_difference = current_time - message_time
+                    if time_difference >= timedelta(minutes=5):
+                        print(
+                            f"Message is probably not a duplicate. Time difference: {time_difference}"
+                        )
+                        continue
+
+                    await message.channel.send(
+                        f"Hey {message.author.name}, you've already sent this message in {channel.mention}!"
+                    )
+                    member = message.guild.get_member(message.author.id)
+                    await timeout_member(member)
+                    return
+        except discord.Forbidden:
+            print(f"Bot does not have permission to read messages in {channel.name}.")
+        except discord.HTTPException as e:
+            print(f"An error occurred: {e}")
+
+
 async def was_message_replied_by_bot(message, bot):
     """
     Checks if a deleted message was replied to by a later message from the bot.
@@ -266,8 +307,9 @@ async def handle_message(message, bot):
     for file in message.attachments:
         if file.filename.endswith((".torrent", ".TORRENT")):
             member = message.guild.get_member(message.author.id)
-            await timeout_member(member, timedelta(minutes=60), "Torrents")
+            await timeout_member(member, timedelta(minutes=120), "Torrents")
             await message.delete()
+            return
 
     if message.author.id == CRAZY_USER_ID:
         now = aware_utcnow()
@@ -277,42 +319,9 @@ async def handle_message(message, bot):
         ):
             crazy_last_response_time = now
             await message.channel.send(f"{CRAZY_URL}")
+            return
 
-    guild = message.guild
-    for channel in guild.text_channels:
-        if channel.id == message.channel.id:
-            continue
-
-        try:
-            async for msg in channel.history(limit=5):
-                # Too many false positives
-                if msg.embeds:
-                    continue
-                # ^^
-                if message.attachments:
-                    continue
-                # ^^
-                if not message.content.strip():
-                    continue
-
-                if msg.author == message.author and msg.content == message.content:
-                    current_time = aware_utcnow()
-                    message_time = msg.created_at
-
-                    time_difference = current_time - message_time
-                    if time_difference >= timedelta(minutes=5):
-                        continue
-
-                    await message.channel.send(
-                        f"Hey {message.author.name}, you've already sent this message in {channel.mention}!"
-                    )
-                    member = message.guild.get_member(message.author.id)
-                    await timeout_member(member)
-                    return
-        except discord.Forbidden:
-            print(f"Bot does not have permission to read messages in {channel.name}.")
-        except discord.HTTPException as e:
-            print(f"An error occurred: {e}")
+    await is_message_a_duplicate(message)
 
     # Check if the message is in an allowed channel
     if message.channel.id not in ALLOWED_CHANNELS:
