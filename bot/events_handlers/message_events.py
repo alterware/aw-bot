@@ -32,6 +32,12 @@ ALLOWED_CHANNELS = [
 SPAM_ROLE_ID = 1350511935677927514
 
 
+async def handle_dm(message):
+    await message.channel.send(
+        "If you DM this bot again, I will carpet-bomb your house."
+    )
+
+
 async def was_message_replied_by_bot(message, bot):
     """
     Checks if a deleted message was replied to by a later message from the bot.
@@ -223,6 +229,10 @@ async def handle_message(message, bot):
     global crazy_last_response_time
 
     if message.author == bot.user:
+        return
+
+    if message.guild is None:
+        await handle_dm(message)
         return
 
     # Too many mentions
