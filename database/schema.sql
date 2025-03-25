@@ -7,5 +7,6 @@ CREATE TABLE IF NOT EXISTS message_patterns (
 CREATE TABLE IF NOT EXISTS user_roles (
     user_id INTEGER PRIMARY KEY,
     role_id INTEGER NOT NULL,
-    date_assigned TEXT
+    date_assigned TEXT,
+    user_name TEXT
 );

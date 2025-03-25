@@ -59,28 +59,28 @@ def remove_pattern(pattern_id: int):
     conn.close()
 
 
-def migrate_users_with_role(user_id: int, role_id: int):
+def migrate_users_with_role(user_id: int, role_id: int, user_name: str):
     """Migrates existing users with the role to the new table."""
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
     cursor.execute(
-        "INSERT OR IGNORE INTO user_roles (user_id, role_id, date_assigned) VALUES (?, ?, ?)",
-        (user_id, role_id, aware_utcnow().isoformat()),
+        "INSERT OR IGNORE INTO user_roles (user_id, role_id, date_assigned, user_name) VALUES (?, ?, ?, ?)",
+        (user_id, role_id, aware_utcnow().isoformat(), user_name),
     )
 
     conn.commit()
     conn.close()
 
 
-def add_user_to_role(user_id: int, role_id: int):
+def add_user_to_role(user_id: int, role_id: int, user_name: str):
     """Adds a new user when they receive the role."""
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
     cursor.execute(
-        "INSERT OR REPLACE INTO user_roles (user_id, role_id, date_assigned) VALUES (?, ?, ?)",
-        (user_id, role_id, aware_utcnow().isoformat()),
+        "INSERT OR REPLACE INTO user_roles (user_id, role_id, date_assigned, user_name) VALUES (?, ?, ?, ?)",
+        (user_id, role_id, aware_utcnow().isoformat(), user_name),
     )
 
     conn.commit()

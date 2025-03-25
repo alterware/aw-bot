@@ -293,7 +293,7 @@ async def handle_message(message, bot):
                 await member.add_roles(spam_role)
 
                 # Add the user to the database
-                add_user_to_role(member.id, SPAM_ROLE_ID)
+                add_user_to_role(member.id, SPAM_ROLE_ID, member.name)
 
             await message.reply(
                 f"Dink Donk! Time to ping everyone! {spam_role.mention}",

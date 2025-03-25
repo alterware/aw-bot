@@ -29,7 +29,7 @@ async def migrate_all_users(bot):
         spam_role = discord.utils.get(guild.roles, id=SPAM_ROLE_ID)
         if spam_role:
             for member in spam_role.members:
-                migrate_users_with_role(member.id, SPAM_ROLE_ID)
+                migrate_users_with_role(member.id, SPAM_ROLE_ID, member.name)
 
 
 class SteamSaleChecker(commands.Cog):
