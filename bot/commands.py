@@ -3,7 +3,7 @@ from typing import Literal
 import discord
 from discord import app_commands
 
-from database import add_pattern
+from database import add_pattern, add_user_to_blacklist
 
 from bot.config import update_patterns
 from bot.utils import compile_stats, fetch_game_stats, perform_search
@@ -42,6 +42,21 @@ async def setup(bot):
         update_patterns(regex, response)
         await interaction.response.send_message(
             f"Pattern added!\n**Regex:** `{regex}`\n**Response:** `{response}`"
+        )
+
+    @bot.tree.command(
+        name="add_to_blacklist",
+        description="Add a user to the blacklist.",
+        guild=discord.Object(id=GUILD_ID),
+    )
+    @app_commands.checks.has_permissions(administrator=True)
+    async def add_to_blacklist_cmd(
+        interaction: discord.Interaction, user: discord.User, reason: str
+    ):
+        """Slash command to add a user to the blacklist."""
+        add_user_to_blacklist(user.id, reason)
+        await interaction.response.send_message(
+            f"User **{user.name}** has been added to the blacklist.\n**Reason:** `{reason}`"
         )
 
     @bot.tree.command(

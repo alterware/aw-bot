@@ -10,3 +10,9 @@ CREATE TABLE IF NOT EXISTS user_roles (
     date_assigned TEXT,
     user_name TEXT
 );
+
+CREATE TABLE IF NOT EXISTS black_list (
+    user_id INTEGER PRIMARY KEY,
+    date_assigned TEXT,
+    reason TEXT
+);

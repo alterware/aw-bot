@@ -87,12 +87,39 @@ def add_user_to_role(user_id: int, role_id: int, user_name: str):
     conn.close()
 
 
-def user_has_role(user_id: int):
+def user_has_role(user_id: int) -> bool:
     """Checks if a user is in the database."""
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
-    cursor.execute("SELECT * FROM user_roles WHERE user_id = ?", (user_id,))
+    cursor.execute("SELECT 1 FROM user_roles WHERE user_id = ?", (user_id,))
+    result = cursor.fetchone()
+
+    conn.close()
+
+    return result is not None
+
+
+def add_user_to_blacklist(user_id: int, reason: str):
+    """Adds a user to the blacklist."""
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+
+    cursor.execute(
+        "INSERT OR IGNORE INTO black_list (user_id, date_assigned, reason) VALUES (?, ?, ?)",
+        (user_id, aware_utcnow().isoformat(), reason),
+    )
+
+    conn.commit()
+    conn.close()
+
+
+def is_user_blacklisted(user_id: int) -> bool:
+    """Checks if a user is on the blacklist."""
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT 1 FROM black_list WHERE user_id = ?", (user_id,))
     result = cursor.fetchone()
 
     conn.close()

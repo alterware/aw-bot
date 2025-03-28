@@ -5,7 +5,7 @@ import discord
 from bot.utils import timeout_member, aware_utcnow
 from bot.config import message_patterns
 
-from database import add_user_to_role
+from database import add_user_to_role, is_user_blacklisted
 
 BOT_LOG = 1112049391482703873
 
@@ -15,6 +15,7 @@ crazy_last_response_time = None
 
 ALLOWED_CHANNELS = [
     1110531063744303138,  # GENERAL_CHANNEL
+    1112048063448617142,  # off-topic
     1145458108190163014,  # mw2 general
     1145456435518525611,  # mw2 mp
     1112016681880014928,  # mw2 sp
@@ -325,6 +326,9 @@ async def handle_message(message, bot):
 
     # Check if the message is in an allowed channel
     if message.channel.id not in ALLOWED_CHANNELS:
+        return
+
+    if is_user_blacklisted(message.author.id):
         return
 
     # Check if any of the patterns match the message
