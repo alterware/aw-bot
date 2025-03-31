@@ -11,6 +11,7 @@ COPY bot /aw-bot/bot
 COPY database /aw-bot/database
 COPY sounds /aw-bot/sounds
 COPY aw.py .
+COPY LICENSE .
 
 ENV BOT_TOKEN=""
 
