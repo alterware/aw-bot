@@ -8,13 +8,15 @@ from bot.config import message_patterns
 from database import add_user_to_role, is_user_blacklisted
 
 BOT_LOG = 1112049391482703873
+GENERAL_CHANNEL = 1110531063744303138
+FAILED_EMBED_MESSAGE = "https://cdn.discordapp.com/attachments/1160511084143312959/1356717216355061920/GnZf-TNXEAAk6aY.png"
 
 CRAZY_USER_ID = 1319364607487512658
 CRAZY_URL = "https://cdn.discordapp.com/attachments/1119371841711112314/1329770453744746559/download.png"
 crazy_last_response_time = None
 
 ALLOWED_CHANNELS = [
-    1110531063744303138,  # GENERAL_CHANNEL
+    GENERAL_CHANNEL,
     1112048063448617142,  # off-topic
     1112016681880014928,  # mw2 sp
     1145459504436220014,  # iw5 support
@@ -320,6 +322,14 @@ async def handle_message(message, bot):
             return
 
     await is_message_a_duplicate(message)
+
+    if (
+        "http" in message.content
+        and not message.embeds
+        and message.channel.id == GENERAL_CHANNEL
+    ):
+        await message.reply(FAILED_EMBED_MESSAGE)
+        return
 
     # Check if the message is in an allowed channel
     if message.channel.id not in ALLOWED_CHANNELS:
