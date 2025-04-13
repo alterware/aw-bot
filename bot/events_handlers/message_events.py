@@ -15,6 +15,10 @@ CRAZY_USER_ID = 1319364607487512658
 CRAZY_URL = "https://cdn.discordapp.com/attachments/1119371841711112314/1329770453744746559/download.png"
 crazy_last_response_time = None
 
+HATE_ME_USER_ID = 748201351665680438
+HATE_ME_URL = "https://cdn.discordapp.com/attachments/1160511084143312959/1361051561400205524/download_1.png"
+hate_me_last_response_time = None
+
 ALLOWED_CHANNELS = [
     GENERAL_CHANNEL,
     1112048063448617142,  # off-topic
@@ -36,6 +40,38 @@ async def handle_dm(message):
     await message.channel.send(
         "If you DM this bot again, I will carpet-bomb your house."
     )
+
+
+async def handle_crazy(message):
+    global crazy_last_response_time
+
+    if message.author.id == CRAZY_USER_ID:
+        now = aware_utcnow()
+        if (
+            crazy_last_response_time is None
+            or now - crazy_last_response_time >= timedelta(hours=8)
+        ):
+            crazy_last_response_time = now
+            await message.channel.send(f"{CRAZY_URL}")
+            return True
+
+    return False
+
+
+async def handle_hate_me(message):
+    global hate_me_last_response_time
+
+    if message.author.id == HATE_ME_USER_ID:
+        now = aware_utcnow()
+        if (
+            hate_me_last_response_time is None
+            or now - hate_me_last_response_time >= timedelta(hours=8)
+        ):
+            hate_me_last_response_time = now
+            await message.channel.send(f"{HATE_ME_URL}")
+            return True
+
+    return False
 
 
 async def is_message_a_duplicate(message):
@@ -267,8 +303,6 @@ async def handle_message_delete(message, bot):
 
 
 async def handle_message(message, bot):
-    global crazy_last_response_time
-
     if message.author == bot.user:
         return
 
@@ -311,15 +345,11 @@ async def handle_message(message, bot):
             await message.delete()
             return
 
-    if message.author.id == CRAZY_USER_ID:
-        now = aware_utcnow()
-        if (
-            crazy_last_response_time is None
-            or now - crazy_last_response_time >= timedelta(hours=8)
-        ):
-            crazy_last_response_time = now
-            await message.channel.send(f"{CRAZY_URL}")
-            return
+    if await handle_crazy(message):
+        return
+
+    if await handle_hate_me(message):
+        return
 
     await is_message_a_duplicate(message)
 
