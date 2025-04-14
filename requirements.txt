@@ -3,3 +3,4 @@ requests
 audioop-lts
 python-dotenv
 pynacl
+google-genai

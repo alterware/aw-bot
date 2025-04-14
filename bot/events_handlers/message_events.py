@@ -4,6 +4,7 @@ import discord
 
 from bot.utils import timeout_member, aware_utcnow
 from bot.config import message_patterns
+from bot.ai.handle_request import forward_to_google_api
 
 from database import add_user_to_role, is_user_blacklisted
 
@@ -34,6 +35,7 @@ ALLOWED_CHANNELS = [
 ]
 
 SPAM_ROLE_ID = 1350511935677927514
+STAFF_ROLE_ID = 1112016152873414707
 
 
 async def handle_dm(message):
@@ -309,6 +311,14 @@ async def handle_message(message, bot):
     if message.guild is None:
         await handle_dm(message)
         return
+
+    # Check if the bot is mentioned
+    if bot.user in message.mentions:
+        staff_role = message.guild.get_role(STAFF_ROLE_ID)
+        member = message.guild.get_member(message.author.id)
+        if staff_role in member.roles:
+            await forward_to_google_api(message)
+            return
 
     # Too many mentions
     if len(message.mentions) >= 3:
