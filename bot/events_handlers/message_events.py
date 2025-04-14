@@ -317,7 +317,19 @@ async def handle_message(message, bot):
         staff_role = message.guild.get_role(STAFF_ROLE_ID)
         member = message.guild.get_member(message.author.id)
         if staff_role in member.roles:
-            await forward_to_google_api(message)
+            image_object = None
+
+            for attachment in message.attachments:
+                if attachment.filename.lower().endswith(
+                    ".jpg"
+                ) or attachment.filename.lower().endswith(".jpeg"):
+                    image_object = (attachment.url, "image/jpeg")
+                    break
+                elif attachment.filename.lower().endswith(".png"):
+                    image_object = (attachment.url, "image/png")
+                    break
+
+            await forward_to_google_api(message, image_object)
             return
 
     # Too many mentions

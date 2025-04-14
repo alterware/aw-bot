@@ -17,6 +17,7 @@ COPY aw.py .
 COPY LICENSE .
 
 ENV BOT_TOKEN=""
+ENV GOOGLE_API_KEY=""
 
 # Where the database will be stored
 ENV BOT_DATA_DIR=""
