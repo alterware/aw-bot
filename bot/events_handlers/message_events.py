@@ -329,7 +329,7 @@ async def handle_message(message, bot):
                     image_object = (attachment.url, "image/png")
                     break
 
-            await forward_to_google_api(message, image_object)
+            await forward_to_google_api(message, bot, image_object)
             return
 
     # Too many mentions

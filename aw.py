@@ -5,6 +5,7 @@ import discord
 from discord.ext import commands
 
 from database import initialize_db
+from bot.ai.handle_request import DiscourseSummarizer
 
 GUILD_ID = 1110531063161299074
 BOT_LOG = 1112049391482703873
@@ -18,6 +19,8 @@ bot = commands.Bot(command_prefix="!", intents=intents)
 load_dotenv(override=True)
 
 initialize_db()
+
+bot.ai_helper = DiscourseSummarizer()
 
 
 @bot.event

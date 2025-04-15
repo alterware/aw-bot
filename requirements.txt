@@ -4,3 +4,4 @@ audioop-lts
 python-dotenv
 pynacl
 google-genai
+beautifulsoup4
