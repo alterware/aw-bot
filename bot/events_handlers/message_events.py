@@ -38,6 +38,54 @@ SPAM_ROLE_ID = 1350511935677927514
 STAFF_ROLE_ID = 1112016152873414707
 
 
+def fetch_image_from_message(message):
+    image_object = None
+    for attachment in message.attachments:
+        if attachment.filename.lower().endswith(
+            ".jpg"
+        ) or attachment.filename.lower().endswith(".jpeg"):
+            image_object = (attachment.url, "image/jpeg")
+            break
+        elif attachment.filename.lower().endswith(".png"):
+            image_object = (attachment.url, "image/png")
+            break
+    return image_object
+
+
+async def handle_bot_mention(message, bot):
+    staff_role = message.guild.get_role(STAFF_ROLE_ID)
+    member = message.guild.get_member(message.author.id)
+    if staff_role in member.roles:
+        # Prioritize the image object from the first message
+        image_object = fetch_image_from_message(message)
+
+        # Check if the message is a reply to another message
+        reply_content = None
+        if message.reference:
+            try:
+                referenced_message = await message.channel.fetch_message(
+                    message.reference.message_id
+                )
+                reply_content = referenced_message
+
+                # Check if the referenced message has an image object (if not already set)
+                if image_object is None:
+                    image_object = fetch_image_from_message(referenced_message)
+
+            except discord.NotFound:
+                print("Referenced message not found.")
+            except discord.Forbidden:
+                print("Bot does not have permission to fetch the referenced message.")
+            except discord.HTTPException as e:
+                print(f"An error occurred while fetching the referenced message: {e}")
+
+        # Pass the reply content to forward_to_google_api
+        await forward_to_google_api(message, bot, image_object, reply_content)
+        return True
+
+    return False
+
+
 async def handle_dm(message):
     await message.channel.send(
         "If you DM this bot again, I will carpet-bomb your house."
@@ -314,22 +362,7 @@ async def handle_message(message, bot):
 
     # Check if the bot is mentioned
     if bot.user in message.mentions:
-        staff_role = message.guild.get_role(STAFF_ROLE_ID)
-        member = message.guild.get_member(message.author.id)
-        if staff_role in member.roles:
-            image_object = None
-
-            for attachment in message.attachments:
-                if attachment.filename.lower().endswith(
-                    ".jpg"
-                ) or attachment.filename.lower().endswith(".jpeg"):
-                    image_object = (attachment.url, "image/jpeg")
-                    break
-                elif attachment.filename.lower().endswith(".png"):
-                    image_object = (attachment.url, "image/png")
-                    break
-
-            await forward_to_google_api(message, bot, image_object)
+        if await handle_bot_mention(message, bot):
             return
 
     # Too many mentions

@@ -118,7 +118,7 @@ class DiscourseSummarizer:
         return response.text
 
 
-async def forward_to_google_api(prompt, bot, image_object=None):
+async def forward_to_google_api(prompt, bot, image_object=None, reply=None):
     """
     Forwards the message content and optional image object to a Google API.
 
@@ -126,6 +126,7 @@ async def forward_to_google_api(prompt, bot, image_object=None):
         prompt (discord.Message): The message object to forward.
         bot (discord.Client): The Discord bot instance.
         image_object (tuple, optional): A tuple containing the image URL and its MIME type (e.g., ("url", "image/jpeg")).
+        reply (discord.Message, optional): The message that was referenced by prompt.
     """
     if not API_KEY:
         await prompt.reply(
@@ -135,12 +136,21 @@ async def forward_to_google_api(prompt, bot, image_object=None):
         return
 
     input = [prompt.content]
+
+    # Have the reply come first in the prompt
+    if reply:
+        input.insert(0, reply.content)
+
     if image_object:
         try:
             image_url, mime_type = image_object
             image = requests.get(image_url)
             image.raise_for_status()
-            input.append(types.Part.from_bytes(data=image.content, mime_type=mime_type))
+
+            # If there is an image, add it to the input before anything else
+            input.insert(
+                0, types.Part.from_bytes(data=image.content, mime_type=mime_type)
+            )
         except requests.RequestException:
             await prompt.reply(f"Failed to fetch the image", mention_author=True)
             return
