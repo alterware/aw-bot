@@ -36,6 +36,7 @@ ALLOWED_CHANNELS = [
 
 SPAM_ROLE_ID = 1350511935677927514
 STAFF_ROLE_ID = 1112016152873414707
+GROK_ROLE_ID = 1362837967919386916
 
 
 def fetch_image_from_message(message):
@@ -360,8 +361,8 @@ async def handle_message(message, bot):
         await handle_dm(message)
         return
 
-    # Check if the bot is mentioned
-    if bot.user in message.mentions:
+    grok_role = message.guild.get_role(GROK_ROLE_ID)
+    if grok_role in message.role_mentions or bot.user in message.mentions:
         if await handle_bot_mention(message, bot):
             return
 
