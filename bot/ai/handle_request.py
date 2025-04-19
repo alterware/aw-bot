@@ -5,6 +5,9 @@ from google import genai
 
 API_KEY = os.getenv("GOOGLE_API_KEY")
 
+GENERIC_INSTRUCTION = "You are a Discord chatbot named 'AlterWare' who helps users with all kinds of topics across various subjects. You should limit your answers to fewer than 2000 characters."
+SPECIFIC_INSTRUCTION = "You are a Discord chatbot named 'AlterWare' who helps users. You should limit your answers to fewer than 2000 characters."
+
 
 class DiscourseSummarizer:
     def __init__(self):
@@ -41,10 +44,7 @@ class DiscourseSummarizer:
             model=self.model,
             config=types.CreateCachedContentConfig(
                 display_name=self.display_name,
-                system_instruction=system_instruction
-                or (
-                    "You are a Discord chat bot named 'AlterWare' who helps users. You should limit your answers to be less than 2000 characters."
-                ),
+                system_instruction=system_instruction or (SPECIFIC_INSTRUCTION),
                 contents=[topic_data],
                 ttl=self.ttl,
             ),
@@ -85,7 +85,7 @@ class DiscourseSummarizer:
             contents=prompt,
             config=types.GenerateContentConfig(
                 max_output_tokens=400,
-                system_instruction="You are a Discord chat bot named 'AlterWare' who helps users. You should limit your answers to be less than 2000 characters.",
+                system_instruction=SPECIFIC_INSTRUCTION,
                 cached_content=self.cache.name,
             ),
         )
@@ -112,13 +112,26 @@ class DiscourseSummarizer:
             contents=prompt,
             config=types.GenerateContentConfig(
                 max_output_tokens=400,
-                system_instruction="You are a Discord chat bot named 'AlterWare' who helps users. You should limit your answers to be less than 2000 characters.",
+                system_instruction=SPECIFIC_INSTRUCTION,
+            ),
+        )
+        return response.text
+
+    def ask_without_context(self, prompt):
+        response = self.client.models.generate_content(
+            model=self.model,
+            contents=prompt,
+            config=types.GenerateContentConfig(
+                max_output_tokens=400,
+                system_instruction=GENERIC_INSTRUCTION,
             ),
         )
         return response.text
 
 
-async def forward_to_google_api(prompt, bot, image_object=None, reply=None):
+async def forward_to_google_api(
+    prompt, bot, image_object=None, reply=None, no_context=False
+):
     """
     Forwards the message content and optional image object to a Google API.
 
@@ -127,6 +140,7 @@ async def forward_to_google_api(prompt, bot, image_object=None, reply=None):
         bot (discord.Client): The Discord bot instance.
         image_object (tuple, optional): A tuple containing the image URL and its MIME type (e.g., ("url", "image/jpeg")).
         reply (discord.Message, optional): The message that was referenced by prompt.
+        no_context (bool, optional): If True, the bot will not use any cached content or context.
     """
     if not API_KEY:
         await prompt.reply(
@@ -155,7 +169,12 @@ async def forward_to_google_api(prompt, bot, image_object=None, reply=None):
             await prompt.reply(f"Failed to fetch the image", mention_author=True)
             return
 
-    response = bot.ai_helper.ask_without_cache(input)
+    response = None
+
+    if no_context:
+        response = bot.ai_helper.ask_without_context(input)
+    else:
+        response = bot.ai_helper.ask_without_cache(input)
 
     await prompt.reply(
         response,

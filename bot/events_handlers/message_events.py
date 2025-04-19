@@ -53,7 +53,7 @@ def fetch_image_from_message(message):
     return image_object
 
 
-async def handle_bot_mention(message, bot):
+async def handle_bot_mention(message, bot, no_context=False):
     staff_role = message.guild.get_role(STAFF_ROLE_ID)
     member = message.guild.get_member(message.author.id)
     if staff_role in member.roles:
@@ -81,7 +81,9 @@ async def handle_bot_mention(message, bot):
                 print(f"An error occurred while fetching the referenced message: {e}")
 
         # Pass the reply content to forward_to_google_api
-        await forward_to_google_api(message, bot, image_object, reply_content)
+        await forward_to_google_api(
+            message, bot, image_object, reply_content, no_context
+        )
         return True
 
     return False
@@ -361,9 +363,13 @@ async def handle_message(message, bot):
         await handle_dm(message)
         return
 
-    grok_role = message.guild.get_role(GROK_ROLE_ID)
-    if grok_role in message.role_mentions or bot.user in message.mentions:
+    if bot.user in message.mentions:
         if await handle_bot_mention(message, bot):
+            return
+
+    grok_role = message.guild.get_role(GROK_ROLE_ID)
+    if grok_role in message.role_mentions:
+        if await handle_bot_mention(message, bot, True):
             return
 
     # Too many mentions
