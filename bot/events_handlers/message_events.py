@@ -436,5 +436,6 @@ async def handle_message(message, bot):
         if re.search(pattern["regex"], message.content, re.IGNORECASE):
             response = pattern["response"]
             reply_message = await message.reply(response, mention_author=True)
+            # Add a reaction to the reply message (if the user decides to delete it)
             await reply_message.add_reaction("\U0000274C")
             break
