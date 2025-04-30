@@ -1,14 +1,32 @@
 from typing import Literal
+import re
 
 import discord
 from discord import app_commands
 
-from database import add_pattern, add_user_to_blacklist
+from database import add_pattern, add_user_to_blacklist, is_user_blacklisted
 
-from bot.config import update_patterns
+from bot.config import update_patterns, message_patterns
 from bot.utils import compile_stats, fetch_game_stats, perform_search
 
 GUILD_ID = 1110531063161299074
+
+BOT_LOG = 1112049391482703873
+GENERAL_CHANNEL = 1110531063744303138
+ALLOWED_CHANNELS = [
+    GENERAL_CHANNEL,
+    1119371841711112314,  # vip-channel
+    1112048063448617142,  # off-topic
+    1112016681880014928,  # mw2 sp
+    1145459504436220014,  # iw5 support
+    1145469136919613551,  # s1 general
+    1145459788151537804,  # s1 support
+    1145469106133401682,  # iw6 general
+    1145458770122649691,  # iw6 support
+    1180796251529293844,  # bo3 general
+    1180796301953212537,  # bo3 support
+    BOT_LOG,
+]
 
 
 async def setup(bot):
@@ -91,6 +109,44 @@ async def setup(bot):
                 stats_message = "Failed to fetch game stats. Please try again later."
 
         await interaction.response.send_message(stats_message, ephemeral=True)
+
+    @bot.tree.command(
+        name="meme",
+        description="Check if the input matches any predefined memess.",
+        guild=discord.Object(id=GUILD_ID),
+    )
+    async def meme(interaction: discord.Interaction, input: str):
+        """
+        Slash command to check if the input matches any predefined patterns.
+        """
+        # Check if the command is executed in an allowed channel
+        if interaction.channel_id not in ALLOWED_CHANNELS:
+            await interaction.response.send_message(
+                "This command cannot be used in this channel.", ephemeral=True
+            )
+            return
+
+        # Check if the user is blacklisted
+        if is_user_blacklisted(interaction.user.id):
+            await interaction.response.send_message(
+                "You are blacklisted from using this command.", ephemeral=True
+            )
+            return
+
+        # Check if any of the patterns match the input
+        for pattern in message_patterns:
+            if re.search(pattern["regex"], input, re.IGNORECASE):
+                response = pattern["response"]
+                reply_message = await interaction.response.send_message(
+                    response, ephemeral=False
+                )
+                # Add a reaction to the reply message (if the user decides to delete it)
+                await reply_message.add_reaction("\U0000274C")
+                break
+        else:
+            await interaction.response.send_message(
+                "No matching patterns found.", ephemeral=True
+            )
 
     await bot.tree.sync(guild=discord.Object(id=GUILD_ID))  # Force sync
 

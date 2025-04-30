@@ -2,10 +2,6 @@ import json
 import os
 from database import get_patterns
 
-PATTERNS_FILE = "patterns.json"
-
-BOT_DATA_DIR = os.getenv("BOT_DATA_DIR", "/bot-data")
-
 message_patterns = get_patterns()
 
 

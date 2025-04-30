@@ -1,12 +1,10 @@
 from datetime import timedelta
-import re
 import discord
 
 from bot.utils import timeout_member, aware_utcnow
-from bot.config import message_patterns
 from bot.ai.handle_request import forward_to_google_api
 
-from database import add_user_to_role, is_user_blacklisted
+from database import add_user_to_role
 
 BOT_LOG = 1112049391482703873
 GENERAL_CHANNEL = 1110531063744303138
@@ -19,20 +17,6 @@ crazy_last_response_time = None
 HATE_ME_USER_ID = 748201351665680438
 HATE_ME_URL = "https://cdn.discordapp.com/attachments/1160511084143312959/1361051561400205524/download_1.png"
 hate_me_last_response_time = None
-
-ALLOWED_CHANNELS = [
-    GENERAL_CHANNEL,
-    1112048063448617142,  # off-topic
-    1112016681880014928,  # mw2 sp
-    1145459504436220014,  # iw5 support
-    1145469136919613551,  # s1 general
-    1145459788151537804,  # s1 support
-    1145469106133401682,  # iw6 general
-    1145458770122649691,  # iw6 support
-    1180796251529293844,  # bo3 general
-    1180796301953212537,  # bo3 support
-    BOT_LOG,
-]
 
 SPAM_ROLE_ID = 1350511935677927514
 STAFF_ROLE_ID = 1112016152873414707
@@ -422,20 +406,3 @@ async def handle_message(message, bot):
     ):
         await message.reply(FAILED_EMBED_MESSAGE)
         return
-
-    # Check if the message is in an allowed channel
-    if message.channel.id not in ALLOWED_CHANNELS:
-        return
-
-    if is_user_blacklisted(message.author.id):
-        return
-
-    # Check if any of the patterns match the message
-    # print('Checking for patterns...')
-    for pattern in message_patterns:
-        if re.search(pattern["regex"], message.content, re.IGNORECASE):
-            response = pattern["response"]
-            reply_message = await message.reply(response, mention_author=True)
-            # Add a reaction to the reply message (if the user decides to delete it)
-            await reply_message.add_reaction("\U0000274C")
-            break
