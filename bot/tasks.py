@@ -22,6 +22,8 @@ COD_GAMES = {
     311210: {"name": "Call of Duty: Black Ops 3", "channel": 1180796251529293844},
 }
 
+DEMENTIA_URL = "https://cdn.discordapp.com/attachments/1112048063448617142/1376956468628291604/share-if-you-have-dementia-v0-cyogps8ikcsc1.jpg"
+
 
 async def migrate_all_users(bot):
     # Fetch users with the SPAM_ROLE_ID and migrate them to the database
@@ -177,10 +179,20 @@ async def setup(bot):
         except Exception as e:
             print(f"An error occurred in heat_death task: {e}")
 
+    @tasks.loop(hours=24)
+    async def share_dementia_image():
+        channel = bot.get_channel(OFFTOPIC_CHANNEL)
+        if channel:
+            for _ in range(3):
+                await channel.send(DEMENTIA_URL)
+        else:
+            print("Debug: Channel not found. Check the OFFTOPIC_CHANNEL variable.")
+
     await migrate_all_users(bot)
 
     update_status.start()
     heat_death.start()
+    share_dementia_image.start()
 
     await bot.add_cog(SteamSaleChecker(bot))
     await bot.add_cog(DiscourseUpdater(bot))
