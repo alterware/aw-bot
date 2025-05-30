@@ -1,5 +1,6 @@
 from datetime import timedelta
 import discord
+import time
 
 from bot.utils import timeout_member, aware_utcnow
 from bot.ai.handle_request import forward_to_google_api
@@ -19,8 +20,11 @@ HATE_ME_URL = "https://cdn.discordapp.com/attachments/1160511084143312959/136105
 hate_me_last_response_time = None
 
 SPAM_ROLE_ID = 1350511935677927514
-STAFF_ROLE_ID = 1112016152873414707
+ADMIN_ROLE_ID = 1112364483915042908
 GROK_ROLE_ID = 1362837967919386916
+
+# Cooldown: user_id -> [timestamps]
+MENTION_COOLDOWNS = {}
 
 
 def fetch_image_from_message(message):
@@ -38,39 +42,50 @@ def fetch_image_from_message(message):
 
 
 async def handle_bot_mention(message, bot, no_context=False):
-    staff_role = message.guild.get_role(STAFF_ROLE_ID)
+    staff_role = message.guild.get_role(ADMIN_ROLE_ID)
     member = message.guild.get_member(message.author.id)
-    if staff_role in member.roles:
-        # Prioritize the image object from the first message
-        image_object = fetch_image_from_message(message)
 
-        # Check if the message is a reply to another message
-        reply_content = None
-        if message.reference:
-            try:
-                referenced_message = await message.channel.fetch_message(
-                    message.reference.message_id
-                )
-                reply_content = referenced_message
-
-                # Check if the referenced message has an image object (if not already set)
-                if image_object is None:
-                    image_object = fetch_image_from_message(referenced_message)
-
-            except discord.NotFound:
-                print("Referenced message not found.")
-            except discord.Forbidden:
-                print("Bot does not have permission to fetch the referenced message.")
-            except discord.HTTPException as e:
-                print(f"An error occurred while fetching the referenced message: {e}")
-
-        # Pass the reply content to forward_to_google_api
-        await forward_to_google_api(
-            message, bot, image_object, reply_content, no_context
+    # Cooldown logic: max 1 use per minute per user
+    now = time.time()
+    user_id = message.author.id
+    timestamps = MENTION_COOLDOWNS.get(user_id, [])
+    # Remove timestamps older than 60 seconds
+    timestamps = [t for t in timestamps if now - t < 60]
+    if len(timestamps) >= 1 and not staff_role in member.roles:
+        await message.reply(
+            "You are using this feature too quickly. Please wait before trying again.",
+            mention_author=True,
         )
         return True
+    timestamps.append(now)
+    MENTION_COOLDOWNS[user_id] = timestamps
 
-    return False
+    # Prioritize the image object from the first message
+    image_object = fetch_image_from_message(message)
+
+    # Check if the message is a reply to another message
+    reply_content = None
+    if message.reference:
+        try:
+            referenced_message = await message.channel.fetch_message(
+                message.reference.message_id
+            )
+            reply_content = referenced_message
+
+            # Check if the referenced message has an image object (if not already set)
+            if image_object is None:
+                image_object = fetch_image_from_message(referenced_message)
+
+        except discord.NotFound:
+            print("Referenced message not found.")
+        except discord.Forbidden:
+            print("Bot does not have permission to fetch the referenced message.")
+        except discord.HTTPException as e:
+            print(f"An error occurred while fetching the referenced message: {e}")
+
+    # Pass the reply content to forward_to_google_api
+    await forward_to_google_api(message, bot, image_object, reply_content, no_context)
+    return True
 
 
 async def handle_dm(message):
