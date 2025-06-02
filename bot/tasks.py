@@ -160,7 +160,7 @@ async def setup(bot):
         )
         await bot.change_presence(activity=activity)
 
-    @tasks.loop(minutes=10080)
+    @tasks.loop(hours=16)
     async def heat_death():
         try:
             now = aware_utcnow()
