@@ -362,13 +362,13 @@ async def handle_message(message, bot):
         await handle_dm(message)
         return
 
-    if bot.user in message.mentions:
-        if await handle_bot_mention(message, bot):
-            return
-
     grok_role = message.guild.get_role(GROK_ROLE_ID)
     if grok_role in message.role_mentions:
         if await handle_bot_mention(message, bot, True):
+            return
+
+    if bot.user in message.mentions:
+        if await handle_bot_mention(message, bot):
             return
 
     # Too many mentions
