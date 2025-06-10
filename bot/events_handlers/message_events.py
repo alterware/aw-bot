@@ -23,6 +23,11 @@ SPAM_ROLE_ID = 1350511935677927514
 ADMIN_ROLE_ID = 1112364483915042908
 GROK_ROLE_ID = 1362837967919386916
 
+ALLOWED_CHANNELS = [
+    1112048063448617142,  # off-topic
+    1119371841711112314,  # vip-channel
+]
+
 # Cooldown: user_id -> [timestamps]
 MENTION_COOLDOWNS = {}
 
@@ -44,6 +49,14 @@ def fetch_image_from_message(message):
 async def handle_bot_mention(message, bot, no_context=False):
     staff_role = message.guild.get_role(ADMIN_ROLE_ID)
     member = message.guild.get_member(message.author.id)
+
+    # Check if the message is in an allowed channel
+    if message.channel.id not in ALLOWED_CHANNELS:
+        await message.reply(
+            "The AI cannot used in this channel.",
+            mention_author=True,
+        )
+        return True
 
     # Cooldown logic: max 1 use per minute per user
     now = time.time()
