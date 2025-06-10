@@ -1,10 +1,12 @@
 from datetime import datetime, timezone
+import random
 import requests
 
 import discord
 from discord.ext import tasks, commands
 
 from bot.utils import aware_utcnow, fetch_api_data
+from bot.config import schizo_messages
 from bot.discourse.handle_request import fetch_cooked_posts, combine_posts_text
 
 from database import migrate_users_with_role
@@ -160,7 +162,7 @@ async def setup(bot):
         )
         await bot.change_presence(activity=activity)
 
-    @tasks.loop(hours=16)
+    @tasks.loop(hours=9)
     async def heat_death():
         try:
             now = aware_utcnow()
@@ -179,6 +181,15 @@ async def setup(bot):
         except Exception as e:
             print(f"An error occurred in heat_death task: {e}")
 
+    @tasks.loop(hours=5)
+    async def shizo_message():
+        channel = bot.get_channel(OFFTOPIC_CHANNEL)
+        if channel and schizo_messages:
+            message = random.choice(schizo_messages)
+            await channel.send(message)
+        else:
+            print("Debug: Channel not found or schizo_messages is empty.")
+
     @tasks.loop(hours=24)
     async def share_dementia_image():
         channel = bot.get_channel(OFFTOPIC_CHANNEL)
@@ -192,6 +203,7 @@ async def setup(bot):
 
     update_status.start()
     heat_death.start()
+    shizo_message.start()
     share_dementia_image.start()
 
     await bot.add_cog(SteamSaleChecker(bot))
