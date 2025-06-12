@@ -166,16 +166,20 @@ async def setup(bot):
     async def heat_death():
         try:
             now = aware_utcnow()
-
             remaining_seconds = int((TARGET_DATE - now).total_seconds())
 
             print(f"Seconds until August 12, 2036, UTC: {remaining_seconds}")
 
             channel = bot.get_channel(OFFTOPIC_CHANNEL)
             if channel:
-                await channel.send(
-                    f"Can you believe it? Only {remaining_seconds} seconds until August 12th, 2036, the heat death of the universe."
-                )
+                if remaining_seconds > 0:
+                    await channel.send(
+                        f"Can you believe it? Only {remaining_seconds} seconds until August 12th, 2036, the heat death of the universe."
+                    )
+                else:
+                    await channel.send(
+                        "The heat death of the universe has come and gone. We exist in a post-time void. Nothing remains but this message."
+                    )
             else:
                 print("Debug: Channel not found. Check the OFFTOPIC_CHANNEL variable.")
         except Exception as e:
