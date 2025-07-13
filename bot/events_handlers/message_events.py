@@ -9,7 +9,6 @@ from database import add_user_to_role
 
 BOT_LOG = 1112049391482703873
 GENERAL_CHANNEL = 1110531063744303138
-FAILED_EMBED_MESSAGE = "https://cdn.discordapp.com/attachments/1112049391482703873/1375848830175547482/download_3.png"
 
 CRAZY_USER_ID = 1319364607487512658
 CRAZY_URL = "https://cdn.discordapp.com/attachments/1119371841711112314/1329770453744746559/download.png"
@@ -432,5 +431,5 @@ async def handle_message(message, bot):
         and not message.embeds
         and message.channel.id == GENERAL_CHANNEL
     ):
-        await message.reply(FAILED_EMBED_MESSAGE)
+        await message.reply("You do not have embed permissions on this server")
         return

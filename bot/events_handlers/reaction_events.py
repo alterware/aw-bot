@@ -7,7 +7,7 @@ async def handle_reaction_add(reaction, user, bot):
     if user == bot.user:
         return
 
-    if reaction.emoji != "\U0000274C":
+    if reaction.emoji != "\U0000274c":
         return
 
     if reaction.message.author != bot.user:

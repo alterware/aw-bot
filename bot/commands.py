@@ -79,7 +79,7 @@ async def setup(bot):
         guild=discord.Object(id=GUILD_ID),
     )
     async def stats(
-        interaction: discord.Interaction, game: Literal["iw4", "s1", "iw6", "t7", "all"]
+        interaction: discord.Interaction, game: Literal["s1", "iw6", "t7", "all"]
     ):
         if game == "all":
             stats_message = await compile_stats()
@@ -120,7 +120,7 @@ async def setup(bot):
                     response, ephemeral=False
                 )
                 # Add a reaction to the reply message (if the user decides to delete it)
-                await reply_message.add_reaction("\U0000274C")
+                await reply_message.add_reaction("\U0000274c")
                 break
         else:
             await interaction.response.send_message(

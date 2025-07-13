@@ -27,7 +27,7 @@ async def fetch_game_stats(game: str):
 
 
 async def compile_stats():
-    games = ["iw4", "s1", "iw6", "t7"]
+    games = ["s1", "iw6", "t7"]
     stats_message = "**Stats for all games:**\n"
     for game in games:
         data = await fetch_game_stats(game)
