@@ -1,6 +1,7 @@
 import csv
 import os
 
+from bot.log import logger
 from database import get_patterns
 
 message_patterns = get_patterns()
@@ -9,7 +10,7 @@ message_patterns = get_patterns()
 def update_patterns(regex: str, response: str):
     """update patterns in memory."""
     message_patterns.append({"regex": regex, "response": response})
-    print(f"Pattern added in memory: {regex}")
+    logger.info(f"Pattern added in memory: {regex}")
 
 
 def load_chat_messages(csv_path="chat/chat_messages.csv"):
@@ -24,7 +25,7 @@ def load_chat_messages(csv_path="chat/chat_messages.csv"):
     """
     messages = []
     if not os.path.exists(csv_path):
-        print(f"CSV file not found: {csv_path}")
+        logger.info(f"CSV file not found: {csv_path}")
         return messages
 
     with open(csv_path, newline="", encoding="utf-8") as csvfile:

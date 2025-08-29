@@ -5,6 +5,8 @@ from datetime import datetime, timedelta, timezone
 import discord
 import requests
 
+from bot.log import logger
+
 
 def aware_utcnow():
     return datetime.now(timezone.utc)
@@ -73,24 +75,24 @@ async def timeout_member(
     reason: str = "Requested by the bot",
 ):
     if not member:
-        print("Debug: Member is None. Skipping timeout.")
+        logger.error("Member is None. Skipping timeout.")
         return
 
     try:
         # Debug: Print the member object and timeout duration
-        print(f"Debug: Attempting to timeout member {member} (ID: {member.id}).")
-        print(f"Debug: Timeout duration set to {duration}.")
-        print(f"Debug: Reason: {reason}")
+        logger.debug(f"Debug: Attempting to timeout member {member} (ID: {member.id}).")
+        logger.debug(f"Debug: Timeout duration set to {duration}.")
+        logger.debug(f"Debug: Reason: {reason}")
 
         await member.timeout(duration, reason=reason)
-        print(f"Debug: Successfully timed out {member}.")
+        logger.info(f"Successfully timed out {member}.")
 
     except discord.Forbidden:
-        print(f"Debug: Bot lacks permissions to timeout member {member}.")
+        logger.error(f"Bot lacks permissions to timeout member {member}.")
     except discord.HTTPException as e:
-        print(f"Debug: HTTPException occurred: {e}")
+        logger.error("HTTPException occurred: %s", e)
     except Exception as e:
-        print(f"Debug: Unexpected error occurred: {e}")
+        logger.error("Unexpected error occurred: %s", e)
 
 
 # Check if a username is valid

@@ -7,6 +7,7 @@ from discord.ext import commands, tasks
 
 from bot.config import schizo_messages
 from bot.discourse.handle_request import combine_posts_text, fetch_cooked_posts
+from bot.log import logger
 from bot.utils import aware_utcnow, fetch_api_data
 from database import migrate_users_with_role
 
@@ -53,7 +54,9 @@ class SteamSaleChecker(commands.Cog):
 
             channel = self.bot.get_channel(channel_id)
             if channel is None:
-                print(f"Error: Channel ID {channel_id} for {game_name} not found.")
+                logger.error(
+                    f"Error: Channel ID {channel_id} for {game_name} not found."
+                )
                 return
 
             steam_api_url = (
@@ -65,7 +68,9 @@ class SteamSaleChecker(commands.Cog):
                 data = response.json().get(str(app_id), {}).get("data", {})
 
                 if not data:
-                    print(f"Warning: No data returned for {game_name}. Skipping...")
+                    logger.warning(
+                        f"Warning: No data returned for {game_name}. Skipping..."
+                    )
                     return
 
                 price_info = data.get("price_overview", {})
@@ -113,7 +118,7 @@ class SteamSaleChecker(commands.Cog):
                     await channel.send(embed=embed)
 
             except requests.RequestException as e:
-                print(f"Error fetching Steam sale data for {game_name}: {e}")
+                logger.error("Error fetching Steam sale data for %s: %s", game_name, e)
 
     @check_steam_sale.before_loop
     async def before_check_steam_sale(self):
@@ -134,16 +139,16 @@ class DiscourseUpdater(commands.Cog):
         Periodically fetches and updates Discourse data for the bot.
         """
         tag_name = "docs"
-        print("Fetching Discourse data...")
+        logger.info("Fetching Discourse data...")
         cooked_posts = fetch_cooked_posts(tag_name)
         if cooked_posts:
             combined_text = combine_posts_text(
                 [{"cooked": post} for post in cooked_posts]
             )
             self.bot.ai_helper.set_discourse_data(combined_text)
-            print("Discourse data updated successfully.")
+            logger.info("Discourse data updated successfully.")
         else:
-            print(f"No posts found for tag '{tag_name}'.")
+            logger.warning(f"No posts found for tag '{tag_name}'.")
 
     @update_discourse_data.before_loop
     async def before_update_discourse_data(self):
@@ -167,7 +172,7 @@ async def setup(bot):
             now = aware_utcnow()
             remaining_seconds = int((TARGET_DATE - now).total_seconds())
 
-            print(f"Seconds until August 12, 2036, UTC: {remaining_seconds}")
+            logger.info(f"Seconds until August 12, 2036, UTC: {remaining_seconds}")
 
             channel = bot.get_channel(OFFTOPIC_CHANNEL)
             if channel:
@@ -180,9 +185,11 @@ async def setup(bot):
                         "The heat death of the universe has come and gone. We exist in a post-time void. Nothing remains but this message."
                     )
             else:
-                print("Debug: Channel not found. Check the OFFTOPIC_CHANNEL variable.")
+                logger.debug(
+                    "Debug: Channel not found. Check the OFFTOPIC_CHANNEL variable."
+                )
         except Exception as e:
-            print(f"An error occurred in heat_death task: {e}")
+            logger.error("An error occurred in heat_death task: %s", e)
 
     @tasks.loop(hours=5)
     async def shizo_message():
@@ -191,7 +198,7 @@ async def setup(bot):
             message = random.choice(schizo_messages)
             await channel.send(message)
         else:
-            print("Debug: Channel not found or schizo_messages is empty.")
+            logger.debug("Debug: Channel not found or schizo_messages is empty.")
 
     @tasks.loop(hours=24)
     async def share_dementia_image():
@@ -200,7 +207,9 @@ async def setup(bot):
             for _ in range(3):
                 await channel.send(DEMENTIA_URL)
         else:
-            print("Debug: Channel not found. Check the OFFTOPIC_CHANNEL variable.")
+            logger.debug(
+                "Debug: Channel not found. Check the OFFTOPIC_CHANNEL variable."
+            )
 
     await migrate_all_users(bot)
 
@@ -212,4 +221,4 @@ async def setup(bot):
     await bot.add_cog(SteamSaleChecker(bot))
     await bot.add_cog(DiscourseUpdater(bot))
 
-    print("Tasks extension loaded!")
+    logger.info("Tasks extension loaded!")

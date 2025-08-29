@@ -4,6 +4,7 @@ from datetime import timedelta
 import discord
 
 from bot.ai.handle_request import forward_to_google_api
+from bot.log import logger
 from bot.utils import aware_utcnow, timeout_member
 from database import add_user_to_role
 
@@ -89,11 +90,15 @@ async def handle_bot_mention(message, bot, no_context=False):
                 image_object = fetch_image_from_message(referenced_message)
 
         except discord.NotFound:
-            print("Referenced message not found.")
+            logger.error("Referenced message not found.")
         except discord.Forbidden:
-            print("Bot does not have permission to fetch the referenced message.")
+            logger.error(
+                "Bot does not have permission to fetch the referenced message."
+            )
         except discord.HTTPException as e:
-            print(f"An error occurred while fetching the referenced message: {e}")
+            logger.error(
+                "An error occurred while fetching the referenced message: %s", e
+            )
 
     # Pass the reply content to forward_to_google_api
     await forward_to_google_api(message, bot, image_object, reply_content, no_context)
@@ -162,7 +167,7 @@ async def is_message_a_duplicate(message):
 
                     time_difference = current_time - message_time
                     if time_difference >= timedelta(minutes=5):
-                        print(
+                        logger.debug(
                             f"Message is probably not a duplicate. Time difference: {time_difference}"
                         )
                         continue
@@ -174,9 +179,11 @@ async def is_message_a_duplicate(message):
                     await timeout_member(member)
                     return
         except discord.Forbidden:
-            print(f"Bot does not have permission to read messages in {channel.name}.")
+            logger.error(
+                f"Bot does not have permission to read messages in {channel.name}."
+            )
         except discord.HTTPException as e:
-            print(f"An error occurred: {e}")
+            logger.error("An error occurred: %s", e)
 
 
 async def was_message_replied_by_bot(message, bot):

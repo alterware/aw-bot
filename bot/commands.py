@@ -5,6 +5,7 @@ import discord
 from discord import app_commands
 
 from bot.config import message_patterns, update_patterns
+from bot.log import logger
 from bot.utils import compile_stats, fetch_game_stats, perform_search
 from database import add_pattern, add_user_to_blacklist, is_user_blacklisted
 
@@ -128,4 +129,4 @@ async def setup(bot):
 
     await bot.tree.sync(guild=discord.Object(id=GUILD_ID))  # Force sync
 
-    print("Commands extension loaded!")
+    logger.info("Commands extension loaded!")

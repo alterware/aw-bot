@@ -5,6 +5,7 @@ from discord.ext import commands
 from dotenv import load_dotenv
 
 from bot.ai.handle_request import DiscourseSummarizer
+from bot.log import logger
 from database import initialize_db
 
 GUILD_ID = 1110531063161299074
@@ -16,7 +17,7 @@ intents = discord.Intents.all()
 bot = commands.Bot(command_prefix="!", intents=intents)
 
 # Load environment variables from .env file (if it exists)
-load_dotenv(override=True)
+load_dotenv(os.path.join(os.path.dirname(__file__), ".env"))
 
 initialize_db()
 
@@ -25,13 +26,13 @@ bot.ai_helper = DiscourseSummarizer()
 
 @bot.event
 async def on_ready():
-    print(f"{bot.user.name} has connected to Discord!")
+    logger.info(f"{bot.user.name} has connected to Discord!")
 
     try:
         await bot.tree.sync(guild=discord.Object(id=GUILD_ID))
-        print("Slash commands synchronized!")
+        logger.info("Slash commands synchronized!")
     except Exception as e:
-        print(f"Failed to sync commands: {e}")
+        logger.error("Failed to sync commands: %s", e)
 
     # Load extensions asynchronously
     await bot.load_extension("bot.tasks")
@@ -39,4 +40,4 @@ async def on_ready():
     await bot.load_extension("bot.commands")
 
 
-bot.run(os.getenv("BOT_TOKEN"))
+bot.run(os.getenv("BOT_TOKEN"), log_handler=None)

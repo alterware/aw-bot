@@ -3,6 +3,8 @@ import os
 import requests
 from bs4 import BeautifulSoup
 
+from bot.log import logger
+
 DISCOURSE_BASE_URL = os.getenv("DISCOURSE_BASE_URL")
 API_KEY = os.getenv("DISCOURSE_API_KEY")
 API_USERNAME = os.getenv("DISCOURSE_API_USERNAME")
@@ -23,8 +25,11 @@ def get_topics_by_id(topic_id):
     response = requests.get(f"{DISCOURSE_BASE_URL}/t/{topic_id}.json", headers=headers)
     if response.status_code == 200:
         return response.json()
+    elif response.status_code == 403:
+        logger.error(f"Access forbidden for topic {topic_id}: {response.status_code}")
+        return None
     else:
-        print(
+        logger.error(
             f"Error fetching topic {topic_id}: {response.status_code} - {response.text}"
         )
         return None
@@ -56,8 +61,11 @@ def get_topics_by_tag(tag_name):
                 for post in posts:
                     cooked_strings.append(post.get("cooked", ""))
         return cooked_strings
+    elif response.status_code == 403:
+        logger.error(f"Access forbidden for topic {topic_id}: {response.status_code}")
+        return None
     else:
-        print(
+        logger.error(
             f"Error fetching topics with tag '{tag_name}': {response.status_code} - {response.text}"
         )
         return []

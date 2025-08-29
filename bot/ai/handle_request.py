@@ -4,6 +4,8 @@ import requests
 from google import genai
 from google.genai import types
 
+from bot.log import logger
+
 API_KEY = os.getenv("GOOGLE_API_KEY")
 
 GENERIC_INSTRUCTION = "You are a Discord chatbot named 'AlterWare' who helps users with all kinds of topics across various subjects. You should limit your answers to fewer than 2000 characters."
@@ -19,7 +21,7 @@ class DiscourseSummarizer:
         self.discourse_data = None
 
         if not API_KEY:
-            print("Google API key is not set. Please contact the administrator.")
+            logger.error("Google API key is not set. Please contact the administrator.")
             return
 
         self.client = genai.Client(api_key=API_KEY)
@@ -50,7 +52,7 @@ class DiscourseSummarizer:
                 ttl=self.ttl,
             ),
         )
-        print(f"Cached content created: {self.cache.name}")
+        logger.info("Cached content created: %s", self.cache.name)
 
     def update_cache(self):
         """
@@ -64,7 +66,7 @@ class DiscourseSummarizer:
         self.client.caches.update(
             name=self.cache.name, config=types.UpdateCachedContentConfig(ttl="21600s")
         )
-        print("Cache updated.")
+        logger.info("Cache updated.")
 
     def ask(self, prompt):
         """

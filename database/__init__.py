@@ -1,6 +1,7 @@
 import os
 import sqlite3
 
+from bot.log import logger
 from bot.utils import aware_utcnow
 
 DB_DIR = os.getenv("BOT_DATA_DIR", "/bot-data")
@@ -11,7 +12,7 @@ os.makedirs(DB_DIR, exist_ok=True)
 
 def initialize_db():
     """Creates the database tables if they don't exist."""
-    print(f"Opening database: {DB_PATH}")
+    logger.info("Opening database: %s", DB_PATH)
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
@@ -21,7 +22,7 @@ def initialize_db():
     conn.commit()
     conn.close()
 
-    print(f"Done loading database: {DB_PATH}")
+    logger.info("Done loading database: %s", DB_PATH)
 
 
 def add_pattern(regex: str, response: str):

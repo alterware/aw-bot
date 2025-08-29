@@ -8,6 +8,7 @@ from bot.events_handlers import (
     handle_reaction_add,
     handle_voice_state_update,
 )
+from bot.log import logger
 
 
 async def setup(bot):
@@ -43,4 +44,4 @@ async def setup(bot):
     async def on_voice_state_update(member, before, after):
         await handle_voice_state_update(member, before, after, bot)
 
-    print("Events extension loaded!")
+    logger.info("Events extension loaded!")

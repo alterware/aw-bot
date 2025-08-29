@@ -2,6 +2,8 @@ import asyncio
 
 import discord
 
+from bot.log import logger
+
 MP3_PATH = "sounds/hello.mp3"
 
 
@@ -29,4 +31,4 @@ async def handle_voice_state_update(member, before, after, bot):
             await vc.disconnect()
 
         except Exception as e:
-            print(f"Error: {e}")
+            logger.error("Error: %s", e)
