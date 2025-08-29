@@ -1,7 +1,7 @@
-from bot.utils import generate_random_nickname, is_valid_username, is_numeric_name
-from database import user_has_role
-
 import discord
+
+from bot.utils import generate_random_nickname, is_numeric_name, is_valid_username
+from database import user_has_role
 
 SPAM_ROLE_ID = 1350511935677927514
 

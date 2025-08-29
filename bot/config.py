@@ -1,5 +1,6 @@
-import os
 import csv
+import os
+
 from database import get_patterns
 
 message_patterns = get_patterns()

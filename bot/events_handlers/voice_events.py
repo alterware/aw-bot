@@ -1,5 +1,6 @@
-import discord
 import asyncio
+
+import discord
 
 MP3_PATH = "sounds/hello.mp3"
 

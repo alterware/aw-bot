@@ -1,7 +1,8 @@
 import os
+
 import requests
-from google.genai import types
 from google import genai
+from google.genai import types
 
 API_KEY = os.getenv("GOOGLE_API_KEY")
 

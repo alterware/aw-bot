@@ -1,13 +1,12 @@
-from typing import Literal
 import re
+from typing import Literal
 
 import discord
 from discord import app_commands
 
-from database import add_pattern, add_user_to_blacklist, is_user_blacklisted
-
-from bot.config import update_patterns, message_patterns
+from bot.config import message_patterns, update_patterns
 from bot.utils import compile_stats, fetch_game_stats, perform_search
+from database import add_pattern, add_user_to_blacklist, is_user_blacklisted
 
 GUILD_ID = 1110531063161299074
 

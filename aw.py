@@ -1,11 +1,11 @@
-from dotenv import load_dotenv
 import os
 
 import discord
 from discord.ext import commands
+from dotenv import load_dotenv
 
-from database import initialize_db
 from bot.ai.handle_request import DiscourseSummarizer
+from database import initialize_db
 
 GUILD_ID = 1110531063161299074
 BOT_LOG = 1112049391482703873

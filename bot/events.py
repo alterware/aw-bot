@@ -1,11 +1,11 @@
 from bot.events_handlers import (
+    handle_bulk_message_delete,
     handle_member_join,
     handle_member_update,
-    handle_reaction_add,
-    handle_message_edit,
-    handle_bulk_message_delete,
-    handle_message_delete,
     handle_message,
+    handle_message_delete,
+    handle_message_edit,
+    handle_reaction_add,
     handle_voice_state_update,
 )
 

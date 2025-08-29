@@ -1,5 +1,5 @@
-import sqlite3
 import os
+import sqlite3
 
 from bot.utils import aware_utcnow
 

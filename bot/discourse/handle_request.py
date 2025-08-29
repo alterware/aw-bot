@@ -1,6 +1,6 @@
-import requests
 import os
 
+import requests
 from bs4 import BeautifulSoup
 
 DISCOURSE_BASE_URL = os.getenv("DISCOURSE_BASE_URL")

@@ -1,10 +1,10 @@
-from datetime import timedelta
-import discord
 import time
+from datetime import timedelta
 
-from bot.utils import timeout_member, aware_utcnow
+import discord
+
 from bot.ai.handle_request import forward_to_google_api
-
+from bot.utils import aware_utcnow, timeout_member
 from database import add_user_to_role
 
 BOT_LOG = 1112049391482703873
@@ -387,6 +387,12 @@ async def handle_message(message, bot):
     if len(message.mentions) >= 3:
         member = message.guild.get_member(message.author.id)
         await timeout_member(member, timedelta(minutes=5), "Spamming mentions")
+        await message.delete()
+        return
+
+    if len(message.embeds) > 2:
+        member = message.guild.get_member(message.author.id)
+        await timeout_member(member, timedelta(minutes=5), "Too many embeds")
         await message.delete()
         return
 
