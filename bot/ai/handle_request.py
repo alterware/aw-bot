@@ -103,9 +103,7 @@ class DiscourseSummarizer:
             str: The generated response.
         """
         if not self.discourse_data:
-            raise RuntimeError(
-                "Discourse data has not been set. Use set_discourse_data first."
-            )
+            return "Discourse data has not been set."
 
         prompt.insert(0, self.discourse_data)
         response = self.client.models.generate_content(
