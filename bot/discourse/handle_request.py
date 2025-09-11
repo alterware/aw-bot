@@ -22,16 +22,27 @@ def get_topics_by_id(topic_id):
     Returns:
         dict or None: The topic data if successful, otherwise None.
     """
-    response = requests.get(f"{DISCOURSE_BASE_URL}/t/{topic_id}.json", headers=headers)
-    if response.status_code == 200:
-        return response.json()
-    elif response.status_code == 403:
-        logger.error(f"Access forbidden for topic {topic_id}: {response.status_code}")
-        return None
-    else:
-        logger.error(
-            f"Error fetching topic {topic_id}: {response.status_code} - {response.text}"
+    try:
+        response = requests.get(
+            f"{DISCOURSE_BASE_URL}/t/{topic_id}.json",
+            headers=headers,
+            timeout=10,  # prevent hanging forever
         )
+        if response.status_code == 200:
+            return response.json()
+        elif response.status_code == 403:
+            logger.error(
+                f"Access forbidden for topic {topic_id}: {response.status_code}"
+            )
+            return None
+        else:
+            logger.error(
+                f"Error fetching topic {topic_id}: {response.status_code} - {response.text}"
+            )
+            return None
+
+    except requests.exceptions.RequestException as e:
+        logger.error(f"Request failed for topic {topic_id}: {e}")
         return None
 
 
