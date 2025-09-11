@@ -1,10 +1,12 @@
 from datetime import timedelta
 
 from bot.utils import aware_utcnow
+from bot.log import logger
+
+import discord
 
 
 async def handle_reaction_add(reaction, user, bot):
-    # Ignore reactions from the bot itself
     if user == bot.user:
         return
 
@@ -22,12 +24,22 @@ async def handle_reaction_add(reaction, user, bot):
     if reaction.message.reference is None:
         return
 
-    original_message = await reaction.message.channel.fetch_message(
-        reaction.message.reference.message_id
-    )
+    try:
+        original_message = await reaction.message.channel.fetch_message(
+            reaction.message.reference.message_id
+        )
+    except discord.NotFound:
+        logger.error(
+            "Error while trying to fetch message: referenced message was deleted or unavailable"
+        )
+        return
+    except discord.Forbidden:
+        logger.error(
+            "Error while trying to fetch message: Bot doesn't have permissions to read that message/channel"
+        )
+        return
 
     if original_message.author == user:
         await reaction.message.delete()
     else:
-        # If the user is not the original author, remove their reaction
         await reaction.remove(user)
