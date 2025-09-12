@@ -26,4 +26,12 @@ ENV DISCOURSE_USERNAME=""
 # Where the database will be stored
 ENV BOT_DATA_DIR=""
 
+# Accept build arguments for metadata
+ARG BUILD_DATE=""
+ARG GIT_TAG=""
+
+# Set them as environment variables
+ENV BUILD_DATE=${BUILD_DATE}
+ENV GIT_TAG=${GIT_TAG}
+
 CMD ["/bot-env/bin/python", "aw.py"]

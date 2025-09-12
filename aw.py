@@ -19,6 +19,9 @@ bot = commands.Bot(command_prefix="!", intents=intents)
 # Load environment variables from .env file (if it exists)
 load_dotenv(os.path.join(os.path.dirname(__file__), ".env"))
 
+build_date = os.getenv("BUILD_DATE")
+git_tag = os.getenv("GIT_TAG")
+
 initialize_db()
 
 bot.ai_helper = DiscourseSummarizer()
@@ -26,6 +29,10 @@ bot.ai_helper = DiscourseSummarizer()
 
 @bot.event
 async def on_ready():
+    # Print build info if available
+    if build_date and git_tag:
+        logger.info(f"AlterWare Bot - Built on {build_date} {git_tag}")
+
     logger.info(f"{bot.user.name} has connected to Discord!")
 
     try:
