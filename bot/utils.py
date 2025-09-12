@@ -110,3 +110,12 @@ def is_numeric_name(username: str) -> bool:
 def generate_random_nickname() -> str:
     random_number = random.randint(1, 99)
     return f"Unknown Soldier {random_number:02d}"
+
+
+def safe_truncate(text: str, max_len: int, placeholder: str = "...") -> str:
+    """Truncate text to Discord's limits safely."""
+    if not text:
+        return "[no content]"
+    if len(text) > max_len:
+        return text[: max_len - len(placeholder)] + placeholder
+    return text

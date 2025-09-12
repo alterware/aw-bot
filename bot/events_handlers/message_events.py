@@ -5,7 +5,7 @@ import discord
 
 from bot.ai.handle_request import forward_to_google_api
 from bot.log import logger
-from bot.utils import aware_utcnow, timeout_member
+from bot.utils import aware_utcnow, timeout_member, safe_truncate
 from database import add_user_to_role
 
 BOT_LOG = 1112049391482703873
@@ -27,6 +27,13 @@ ALLOWED_CHANNELS = [
     1112048063448617142,  # off-topic
     1119371841711112314,  # vip-channel
 ]
+
+# Discord embed limits
+MAX_TITLE = 256
+MAX_DESC = 4096
+MAX_FIELD_NAME = 256
+MAX_FIELD_VALUE = 1024
+MAX_FOOTER = 2048
 
 # Cooldown: user_id -> [timestamps]
 MENTION_COOLDOWNS = {}
@@ -289,7 +296,11 @@ async def handle_message_edit(before, after, bot):
     )
     embed.add_field(name="Author", value=before.author.mention, inline=True)  # noqa
     embed.add_field(name="Channel", value=before.channel.mention, inline=True)  # noqa
-    embed.add_field(name="Content", value=before.content, inline=False)  # noqa
+    embed.add_field(
+        name="Content",
+        value=safe_truncate(before.content, MAX_FIELD_VALUE),
+        inline=False,
+    )  # noqa
     embed.set_footer(text=f"Message ID: {before.id} | Author ID: {before.author.id}")
 
     await channel.send(embed=embed)
@@ -314,7 +325,11 @@ async def handle_bulk_message_delete(messages, bot):
             name="Channel", value=message.channel.mention, inline=True
         )  # noqa
         if message.content:
-            embed.add_field(name="Content", value=message.content, inline=False)  # noqa
+            embed.add_field(
+                name="Content",
+                value=safe_truncate(message.content, MAX_FIELD_VALUE),
+                inline=False,
+            )  # noqa
         embed.set_footer(
             text=f"Message ID: {message.id} | Author ID: {message.author.id}"  # noqa
         )
@@ -346,7 +361,11 @@ async def handle_message_delete(message, bot):
     embed.add_field(name="Author", value=message.author.mention, inline=True)  # noqa
     embed.add_field(name="Channel", value=message.channel.mention, inline=True)  # noqa
     if message.content:
-        embed.add_field(name="Content", value=message.content, inline=False)  # noqa
+        embed.add_field(
+            name="Content",
+            value=safe_truncate(message.content, MAX_FIELD_VALUE),
+            inline=False,
+        )  # noqa
 
     if message.reference is not None:
         original_message = await message.channel.fetch_message(
