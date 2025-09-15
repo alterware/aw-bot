@@ -1,6 +1,6 @@
 import os
-
-import requests
+import aiohttp
+import asyncio
 from bs4 import BeautifulSoup
 
 from bot.log import logger
@@ -12,9 +12,9 @@ API_USERNAME = os.getenv("DISCOURSE_API_USERNAME")
 headers = {"Api-Key": API_KEY, "Api-Username": API_USERNAME}
 
 
-def get_topics_by_id(topic_id):
+async def get_topics_by_id(topic_id):
     """
-    Fetches a topic by its ID and returns the topic data.
+    Async: Fetches a topic by its ID and returns the topic data.
 
     Args:
         topic_id (int): The ID of the topic to fetch.
@@ -22,33 +22,35 @@ def get_topics_by_id(topic_id):
     Returns:
         dict or None: The topic data if successful, otherwise None.
     """
+    url = f"{DISCOURSE_BASE_URL}/t/{topic_id}.json"
+    timeout = aiohttp.ClientTimeout(total=5)
     try:
-        response = requests.get(
-            f"{DISCOURSE_BASE_URL}/t/{topic_id}.json",
-            headers=headers,
-            timeout=10,  # prevent hanging forever
-        )
-        if response.status_code == 200:
-            return response.json()
-        elif response.status_code == 403:
-            logger.error(
-                f"Access forbidden for topic {topic_id}: {response.status_code}"
-            )
-            return None
-        else:
-            logger.error(
-                f"Error fetching topic {topic_id}: {response.status_code} - {response.text}"
-            )
-            return None
-
-    except requests.exceptions.RequestException as e:
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url, headers=headers, timeout=timeout) as response:
+                if response.status == 200:
+                    return await response.json()
+                elif response.status == 403:
+                    logger.error(
+                        f"Access forbidden for topic {topic_id}: {response.status}"
+                    )
+                    return None
+                else:
+                    text = await response.text()
+                    logger.error(
+                        f"Error fetching topic {topic_id}: {response.status} - {text}"
+                    )
+                    return None
+    except asyncio.TimeoutError:
+        logger.error(f"Timeout while fetching topic {topic_id}")
+        return None
+    except aiohttp.ClientError as e:
         logger.error(f"Request failed for topic {topic_id}: {e}")
         return None
 
 
-def get_topics_by_tag(tag_name):
+async def get_topics_by_tag(tag_name):
     """
-    Fetches all topics with a specific tag and retrieves the cooked string from each post.
+    Async: Fetches all topics with a specific tag and retrieves the cooked string from each post.
 
     Args:
         tag_name (str): The name of the tag to filter topics.
@@ -56,35 +58,45 @@ def get_topics_by_tag(tag_name):
     Returns:
         list: A list of cooked strings from all posts in the topics.
     """
-    response = requests.get(
-        f"{DISCOURSE_BASE_URL}/tag/{tag_name}.json", headers=headers
-    )
-    if response.status_code == 200:
-        data = response.json()
-        topics = data.get("topic_list", {}).get("topics", [])
-        cooked_strings = []
-
-        for topic in topics:
-            topic_id = topic["id"]
-            topic_data = get_topics_by_id(topic_id)
-            if topic_data:
-                posts = topic_data.get("post_stream", {}).get("posts", [])
-                for post in posts:
-                    cooked_strings.append(post.get("cooked", ""))
-        return cooked_strings
-    elif response.status_code == 403:
-        logger.error(f"Access forbidden for topic {topic_id}: {response.status_code}")
-        return None
-    else:
-        logger.error(
-            f"Error fetching topics with tag '{tag_name}': {response.status_code} - {response.text}"
-        )
+    url = f"{DISCOURSE_BASE_URL}/tag/{tag_name}.json"
+    timeout = aiohttp.ClientTimeout(total=5)
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url, headers=headers, timeout=timeout) as response:
+                if response.status == 200:
+                    data = await response.json()
+                    topics = data.get("topic_list", {}).get("topics", [])
+                    cooked_strings = []
+                    for topic in topics:
+                        topic_id = topic["id"]
+                        topic_data = await get_topics_by_id(topic_id)
+                        if topic_data:
+                            posts = topic_data.get("post_stream", {}).get("posts", [])
+                            for post in posts:
+                                cooked_strings.append(post.get("cooked", ""))
+                    return cooked_strings
+                elif response.status == 403:
+                    logger.error(
+                        f"Access forbidden for tag '{tag_name}': {response.status}"
+                    )
+                    return None
+                else:
+                    text = await response.text()
+                    logger.error(
+                        f"Error fetching topics with tag '{tag_name}': {response.status} - {text}"
+                    )
+                    return []
+    except asyncio.TimeoutError:
+        logger.error(f"Timeout while fetching topics with tag '{tag_name}'")
+        return []
+    except aiohttp.ClientError as e:
+        logger.error(f"Request failed for topics with tag {tag_name}: {e}")
         return []
 
 
-def fetch_cooked_posts(tag_name):
+async def fetch_cooked_posts(tag_name):
     """
-    Fetches cooked strings from posts with a specific tag.
+    Async: Fetches cooked strings from posts with a specific tag.
 
     Args:
         tag_name (str): The name of the tag to filter topics.
@@ -92,7 +104,7 @@ def fetch_cooked_posts(tag_name):
     Returns:
         list: A list of cooked strings from posts with the specified tag.
     """
-    return get_topics_by_tag(tag_name)
+    return await get_topics_by_tag(tag_name)
 
 
 def html_to_text(html_content):

@@ -140,7 +140,7 @@ class DiscourseUpdater(commands.Cog):
         """
         tag_name = "docs"
         logger.info("Fetching Discourse data...")
-        cooked_posts = fetch_cooked_posts(tag_name)
+        cooked_posts = await fetch_cooked_posts(tag_name)
         if cooked_posts:
             combined_text = combine_posts_text(
                 [{"cooked": post} for post in cooked_posts]
