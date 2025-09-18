@@ -31,4 +31,4 @@ async def handle_voice_state_update(member, before, after, bot):
             await vc.disconnect()
 
         except Exception as e:
-            logger.error("Error: %s", e)
+            logger.error("Error while connecting to a voice channel: %s", e)
