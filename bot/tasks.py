@@ -185,9 +185,7 @@ async def setup(bot):
                         "The heat death of the universe has come and gone. We exist in a post-time void. Nothing remains but this message."
                     )
             else:
-                logger.debug(
-                    "Debug: Channel not found. Check the OFFTOPIC_CHANNEL variable."
-                )
+                logger.error("Channel not found. Check the OFFTOPIC_CHANNEL variable.")
         except Exception as e:
             logger.error("An error occurred in heat_death task: %s", e)
 
@@ -198,7 +196,7 @@ async def setup(bot):
             message = random.choice(schizo_messages)
             await channel.send(message)
         else:
-            logger.debug("Debug: Channel not found or schizo_messages is empty.")
+            logger.error("Channel not found or schizo_messages is empty.")
 
     @tasks.loop(hours=24)
     async def share_dementia_image():
@@ -207,9 +205,7 @@ async def setup(bot):
             for _ in range(3):
                 await channel.send(DEMENTIA_URL)
         else:
-            logger.debug(
-                "Debug: Channel not found. Check the OFFTOPIC_CHANNEL variable."
-            )
+            logger.error("Channel not found. Check the OFFTOPIC_CHANNEL variable.")
 
     await migrate_all_users(bot)
 

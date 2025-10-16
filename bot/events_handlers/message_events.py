@@ -187,7 +187,7 @@ async def is_message_a_duplicate(message):
                     return
         except discord.Forbidden:
             logger.error(
-                f"Bot does not have permission to read messages in {channel.name}."
+                "Bot does not have permission to read messages in %s", channel.name
             )
         except discord.HTTPException as e:
             logger.error("An error occurred: %s", e)
