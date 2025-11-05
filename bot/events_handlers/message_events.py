@@ -463,5 +463,12 @@ async def handle_message(message, bot):
         and not message.embeds
         and message.channel.id == GENERAL_CHANNEL
     ):
-        await message.reply("You do not have embed permissions on this server")
-        return
+        try:
+            # Try to fetch the message to see if it still exists
+            await message.channel.fetch_message(message.id)
+            await message.reply("You do not have embed permissions on this server")
+        except discord.NotFound:
+            logger.warning(
+                f"Message {message.id} was deleted before reply could be sent in channel {message.channel.id}"
+            )
+            pass
