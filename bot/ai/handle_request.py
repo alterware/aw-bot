@@ -181,5 +181,3 @@ async def forward_to_google_api(
         response,
         mention_author=True,
     )
-    # Add a reaction to the reply message (if the user decides to delete it)
-    await reply_message.add_reaction("\U0000274c")
