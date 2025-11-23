@@ -6,7 +6,7 @@ import discord
 from bot.ai.handle_request import forward_to_google_api
 from bot.log import logger
 from bot.utils import aware_utcnow, timeout_member, safe_truncate
-from database import add_user_to_role
+from database import add_user_to_role, is_user_blacklisted
 
 BOT_LOG = 1112049391482703873
 GENERAL_CHANNEL = 1110531063744303138
@@ -62,6 +62,12 @@ async def handle_bot_mention(message, bot, no_context=False):
         await message.reply(
             "The AI cannot used in this channel.",
             mention_author=True,
+        )
+        return True
+
+    if is_user_blacklisted(message.author.id):
+        message.reply(
+            "You are blacklisted from using this command.", mention_author=True
         )
         return True
 
