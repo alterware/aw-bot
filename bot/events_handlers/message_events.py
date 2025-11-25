@@ -26,6 +26,9 @@ GROK_ROLE_ID = 1362837967919386916
 ALLOWED_CHANNELS = [
     1112048063448617142,  # off-topic
     1119371841711112314,  # vip-channel
+    1382808781032914975,  # launcher-support
+    1180796301953212537,  # bo3-support
+    1145459504436220014,  # mw3-support
 ]
 
 # Discord embed limits
