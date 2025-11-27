@@ -1,9 +1,10 @@
-import csv
 import os
-import glob
-
 from bot.log import logger
 from database import get_patterns
+
+from pymongo import MongoClient
+
+MONGO_URI = os.getenv("MONGO_URI")
 
 message_patterns = get_patterns()
 
@@ -14,61 +15,55 @@ def update_patterns(regex: str, response: str):
     logger.info(f"Pattern added in memory: {regex}")
 
 
-def load_chat_messages_from_disk(csv_path="chat/chat_messages_blue.csv"):
+def load_chat_messages_from_db(
+    mongo_uri="mongodb://localhost:27017",
+    database="discord_bot",
+    collection="messages",
+):
     """
-    Loads all messages from the given CSV file.
+    Loads all chat messages from MongoDB.
 
     Args:
-        csv_path (str): Path to the CSV file.
+        mongo_uri (str): MongoDB connection URI
+        database (str): Name of the MongoDB database
+        collection (str): Name of the collection
 
     Returns:
-        list: List of message strings.
+        list: list of message strings
     """
-    messages = []
-    if not os.path.exists(csv_path):
-        logger.info(f"CSV file not found: {csv_path}")
-        return messages
+    try:
+        client = MongoClient(mongo_uri)
+        db = client[database]
+        col = db[collection]
 
-    with open(csv_path, newline="", encoding="utf-8") as csvfile:
-        reader = csv.DictReader(csvfile)
-        for row in reader:
-            msg = row.get("Message")
-            if msg:
-                messages.append(msg)
-    return messages
-
-
-def load_chat_messages():
-    """
-    Loads and combines chat messages from all CSV files in the chat folder.
-
-    Returns:
-        list: Combined list of all message strings from all CSV files.
-    """
-    messages = []
-
-    # Find all CSV files in the chat folder
-    csv_files = glob.glob("chat/*.csv")
-
-    if not csv_files:
-        logger.error("No CSV files found in chat folder")
-        return messages
-
-    logger.info(
-        f"Found {len(csv_files)} CSV files: {[os.path.basename(f) for f in csv_files]}"
-    )
-
-    # Load messages from each CSV file
-    for csv_file in csv_files:
-        file_messages = load_chat_messages_from_disk(csv_file)
-        messages.extend(file_messages)
-        logger.info(
-            f"Loaded {len(file_messages)} messages from {os.path.basename(csv_file)}"
+        logger.debug(
+            f"Connecting to MongoDB at {mongo_uri}, DB='{database}', Collection='{collection}'"
         )
 
-    logger.info(f"Total messages loaded: {len(messages)}")
+        cursor = col.find({}, {"message": 1})
+        messages = [doc["message"] for doc in cursor if "message" in doc]
+
+        logger.info(f"Loaded {len(messages)} messages from MongoDB")
+
+        return messages
+
+    except Exception as e:
+        logger.error(f"Failed to load messages from MongoDB: {e}")
+        return []
+
+
+def load_mongodb():
+    messages = []
+
+    if not MONGO_URI:
+        logger.error("MONGO_URI is not set. Please contact the administrator.")
+        return
+
+    messages = load_chat_messages_from_db(MONGO_URI)
+    if not messages:
+        logger.warning("messages collection is empty after loading from MongoDB!")
 
     return messages
 
 
-schizo_messages = load_chat_messages()
+schizo_messages = load_mongodb()

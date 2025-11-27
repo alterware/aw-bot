@@ -11,7 +11,6 @@ COPY requirements.txt .
 RUN /bot-env/bin/pip install --no-cache-dir -r requirements.txt
 
 COPY bot /aw-bot/bot
-COPY chat /aw-bot/chat
 COPY database /aw-bot/database
 COPY sounds /aw-bot/sounds
 COPY aw.py .
@@ -25,6 +24,8 @@ ENV DISCOURSE_USERNAME=""
 
 # Where the database will be stored
 ENV BOT_DATA_DIR=""
+
+ENV MONGO_URI=""
 
 # Accept build arguments for metadata
 ARG BUILD_DATE=""
