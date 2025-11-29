@@ -7,6 +7,8 @@ from bot.ai.handle_request import forward_to_google_api
 from bot.log import logger
 from bot.utils import aware_utcnow, timeout_member, safe_truncate
 from database import add_user_to_role, is_user_blacklisted
+from bot.mongodb.load_db import DeletedMessage
+from bot.mongodb.load_db import write_deleted_message_to_collection
 
 BOT_LOG = 1112049391482703873
 GENERAL_CHANNEL = 1110531063744303138
@@ -322,6 +324,17 @@ async def handle_bulk_message_delete(messages, bot):
         return
 
     for message in messages:
+        deleted_message = DeletedMessage(
+            message_id=message.id,
+            channel_id=message.channel.id,
+            author_id=message.author.id,
+            author_name=message.author.name,
+            content=message.content or "",
+            timestamp=message.created_at,
+        )
+
+        write_deleted_message_to_collection(deleted_message)
+
         embed = discord.Embed(
             title="Deleted Message",
             description="A message was deleted.",
@@ -361,6 +374,17 @@ async def handle_message_delete(message, bot):
         )  # noqa
         # It is impossible to recover the message at this point
         return
+
+    deleted_message = DeletedMessage(
+        message_id=message.id,
+        channel_id=message.channel.id,
+        author_id=message.author.id,
+        author_name=message.author.name,
+        content=message.content or "",
+        timestamp=message.created_at,
+    )
+
+    write_deleted_message_to_collection(deleted_message)
 
     embed = discord.Embed(
         title="Deleted Message",
