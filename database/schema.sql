@@ -16,3 +16,9 @@ CREATE TABLE IF NOT EXISTS black_list (
     date_assigned TEXT,
     reason TEXT
 );
+
+CREATE TABLE IF NOT EXISTS aka_list (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    aka TEXT NOT NULL,
+    response TEXT NOT NULL
+);

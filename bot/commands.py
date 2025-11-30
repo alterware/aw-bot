@@ -7,7 +7,13 @@ from discord import app_commands
 from bot.config import message_patterns, update_patterns
 from bot.log import logger
 from bot.utils import compile_stats, fetch_game_stats, perform_search
-from database import add_pattern, add_user_to_blacklist, is_user_blacklisted
+from database import (
+    add_aka_response,
+    search_aka,
+    add_pattern,
+    add_user_to_blacklist,
+    is_user_blacklisted,
+)
 
 GUILD_ID = 1110531063161299074
 
@@ -31,6 +37,21 @@ async def setup(bot):
             raise error
 
     bot.tree.on_error = on_tree_error
+
+    @bot.tree.command(
+        name="add_aka_message",
+        description="Add a new aka message to the database.",
+        guild=discord.Object(id=GUILD_ID),
+    )
+    @app_commands.checks.has_permissions(administrator=True)
+    async def add_aka_message(
+        interaction: discord.Interaction, aka: str, response: str
+    ):
+        """Slash command to add a new aka pattern to the database."""
+        add_aka_response(aka, response)
+        await interaction.response.send_message(
+            f"Pattern added!\n**AKA:** `{aka}`\n**Response:** `{response}`"
+        )
 
     @bot.tree.command(
         name="add_pattern",
@@ -97,8 +118,34 @@ async def setup(bot):
         await interaction.response.send_message(stats_message, ephemeral=True)
 
     @bot.tree.command(
+        name="aka",
+        description="Check if the input matches any predefined aka patterns.",
+        guild=discord.Object(id=GUILD_ID),
+    )
+    async def aka(interaction: discord.Interaction, input: str):
+        """
+        Slash command to check if the input matches any predefined aka patterns.
+        """
+        # Check if the user is blacklisted
+        if is_user_blacklisted(interaction.user.id):
+            await interaction.response.send_message(
+                "You are blacklisted from using this command.", ephemeral=True
+            )
+            return
+
+        # Search the database for a match
+        response = search_aka(input)
+
+        if response:
+            await interaction.response.send_message(response, ephemeral=False)
+        else:
+            await interaction.response.send_message(
+                "No matching aka patterns found.", ephemeral=True
+            )
+
+    @bot.tree.command(
         name="meme",
-        description="Check if the input matches any predefined memess.",
+        description="Check if the input matches any predefined memes.",
         guild=discord.Object(id=GUILD_ID),
     )
     async def meme(interaction: discord.Interaction, input: str):

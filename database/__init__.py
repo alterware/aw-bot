@@ -126,3 +126,33 @@ def is_user_blacklisted(user_id: int) -> bool:
     conn.close()
 
     return result is not None
+
+
+def add_aka_response(aka: str, response: str) -> None:
+    """
+    Insert a new AKA/response pair into the database.
+    """
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+
+    cursor.execute(
+        "INSERT INTO aka_list (aka, response) VALUES (?, ?)", (aka, response)
+    )
+
+    conn.commit()
+    conn.close()
+
+
+def search_aka(keyword: str) -> str | None:
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+
+    # Exact match (case-insensitive)
+    cursor.execute(
+        "SELECT response FROM aka_list WHERE LOWER(aka) = LOWER(?) LIMIT 1", (keyword,)
+    )
+
+    row = cursor.fetchone()
+    conn.close()
+
+    return row[0] if row else None
