@@ -449,7 +449,7 @@ async def handle_message(message, bot):
         await message.delete()
         return
 
-    if len(message.embeds) > 2:
+    if len(message.embeds) > 2 or len(message.attachments) > 3:
         member = message.guild.get_member(message.author.id)
         await timeout_member(member, timedelta(minutes=5), "Too many embeds")
         await message.delete()
