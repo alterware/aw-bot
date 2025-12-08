@@ -80,9 +80,9 @@ async def timeout_member(
 
     try:
         # Debug: Print the member object and timeout duration
-        logger.debug(f"Debug: Attempting to timeout member {member} (ID: {member.id}).")
-        logger.debug(f"Debug: Timeout duration set to {duration}.")
-        logger.debug(f"Debug: Reason: {reason}")
+        logger.debug(f"Attempting to timeout member {member} (ID: {member.id}).")
+        logger.debug(f"Timeout duration set to {duration}.")
+        logger.debug(f"Reason: {reason}")
 
         await member.timeout(duration, reason=reason)
         logger.info(f"Successfully timed out {member}.")

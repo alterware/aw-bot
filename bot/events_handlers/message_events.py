@@ -64,6 +64,9 @@ async def handle_bot_mention(message, bot, no_context=False):
 
     # Check if the message is in an allowed channel
     if message.channel.id not in ALLOWED_CHANNELS:
+        logger.debug(
+            f"User {message.author} attempted to use AI in non-allowed channel: {message.channel.name}"
+        )
         await message.reply(
             "The AI cannot used in this channel.",
             mention_author=True,
@@ -71,8 +74,13 @@ async def handle_bot_mention(message, bot, no_context=False):
         return True
 
     if is_user_blacklisted(message.author.id):
-        message.reply(
-            "You are blacklisted from using this command.", mention_author=True
+        logger.warning(
+            f"Blacklisted user {message.author} (ID: {message.author.id}) attempted to use AI"
+        )
+        await message.reply(
+            "**Time Travel Required!**\n"
+            "You'll gain access to this feature on **August 12th, 2036**.\n",
+            mention_author=True,
         )
         return True
 
