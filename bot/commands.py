@@ -64,7 +64,7 @@ async def setup(bot):
     ):
         """Slash command to add a new message pattern to the database."""
         add_meme_pattern(regex, response)
-        logger.info(f"Pattern added in memory: {regex}")
+        logger.info("Saved a new meme pattern: %s", regex)
         await interaction.response.send_message(
             f"Pattern added!\n**Regex:** `{regex}`\n**Response:** `{response}`"
         )
