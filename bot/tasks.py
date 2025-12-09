@@ -5,10 +5,10 @@ import discord
 import requests
 from discord.ext import commands, tasks
 
-from bot.config import schizo_messages
 from bot.discourse.handle_request import combine_posts_text, fetch_cooked_posts
 from bot.log import logger
 from bot.utils import aware_utcnow, fetch_api_data
+from bot.mongodb import read_random_message_from_collection
 from database import migrate_users_with_role
 
 TARGET_DATE = datetime(2036, 8, 12, tzinfo=timezone.utc)
@@ -192,11 +192,14 @@ async def setup(bot):
     @tasks.loop(hours=5)
     async def shizo_message():
         channel = bot.get_channel(OFFTOPIC_CHANNEL)
-        if channel and schizo_messages:
-            message = random.choice(schizo_messages)
-            await channel.send(message)
+        if channel:
+            message = read_random_message_from_collection()
+            if message:
+                await channel.send(message)
+            else:
+                logger.error("No funny messages were found.")
         else:
-            logger.error("Channel not found or schizo_messages is empty.")
+            logger.error("Channel not found. Check the OFFTOPIC_CHANNEL variable.")
 
     @tasks.loop(hours=24)
     async def share_dementia_image():

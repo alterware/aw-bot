@@ -25,7 +25,7 @@ def initialize_db():
     logger.info("Done loading database: %s", DB_PATH)
 
 
-def add_pattern(regex: str, response: str):
+def add_meme_pattern(regex: str, response: str):
     """Adds a new pattern to the database."""
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
@@ -38,7 +38,7 @@ def add_pattern(regex: str, response: str):
     conn.close()
 
 
-def get_patterns():
+def get_meme_patterns():
     """Fetches all regex-response pairs from the database."""
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
@@ -50,7 +50,7 @@ def get_patterns():
     return [{"regex": row[0], "response": row[1]} for row in patterns]
 
 
-def remove_pattern(pattern_id: int):
+def remove_meme_pattern(pattern_id: int):
     """Removes a pattern by ID."""
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()

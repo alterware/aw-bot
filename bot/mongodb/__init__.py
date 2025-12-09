@@ -1,1 +1,1 @@
-from .load_db import load_chat_messages_from_db
+from .load_db import load_chat_messages_from_db, read_random_message_from_collection

@@ -4,13 +4,13 @@ from typing import Literal
 import discord
 from discord import app_commands
 
-from bot.config import message_patterns, update_patterns
 from bot.log import logger
 from bot.utils import compile_stats, fetch_game_stats, perform_search
 from database import (
+    get_meme_patterns,
     add_aka_response,
     search_aka,
-    add_pattern,
+    add_meme_pattern,
     add_user_to_blacklist,
     is_user_blacklisted,
 )
@@ -54,17 +54,17 @@ async def setup(bot):
         )
 
     @bot.tree.command(
-        name="add_pattern",
+        name="add_meme_pattern",
         description="Add a new message pattern to the database.",
         guild=discord.Object(id=GUILD_ID),
     )
     @app_commands.checks.has_permissions(administrator=True)
-    async def add_pattern_cmd(
+    async def add_meme_pattern_cmd(
         interaction: discord.Interaction, regex: str, response: str
     ):
         """Slash command to add a new message pattern to the database."""
-        add_pattern(regex, response)
-        update_patterns(regex, response)
+        add_meme_pattern(regex, response)
+        logger.info(f"Pattern added in memory: {regex}")
         await interaction.response.send_message(
             f"Pattern added!\n**Regex:** `{regex}`\n**Response:** `{response}`"
         )
@@ -159,6 +159,7 @@ async def setup(bot):
             )
             return
 
+        message_patterns = get_meme_patterns()
         # Check if any of the patterns match the input
         for pattern in message_patterns:
             if re.search(pattern["regex"], input, re.IGNORECASE):
