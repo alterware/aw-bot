@@ -1,4 +1,5 @@
 import time
+import re
 from datetime import timedelta
 
 import discord
@@ -460,6 +461,16 @@ async def handle_message(message, bot):
     if len(message.embeds) > 2 or len(message.attachments) > 3:
         member = message.guild.get_member(message.author.id)
         await timeout_member(member, timedelta(minutes=5), "Too many embeds")
+        await message.delete()
+        return
+
+    image_pattern = r"\.(?:jpg|jpeg|png|gif|webp|bmp)\b"
+    raw_attachment_count = len(
+        re.findall(image_pattern, message.content, re.IGNORECASE)
+    )
+    if raw_attachment_count > 3:
+        member = message.guild.get_member(message.author.id)
+        await timeout_member(member, timedelta(minutes=5), "Suspicious")
         await message.delete()
         return
 
