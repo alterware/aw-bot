@@ -1,1 +1,0 @@
-from .handle_request import forward_to_google_api

@@ -4,10 +4,9 @@ from datetime import timedelta
 
 import discord
 
-from bot.ai.handle_request import forward_to_google_api
 from bot.log import logger
 from bot.utils import aware_utcnow, timeout_member, safe_truncate
-from database import add_user_to_role, is_user_blacklisted
+from database import add_user_to_role
 from bot.mongodb.load_db import DeletedMessage
 from bot.mongodb.load_db import write_deleted_message_to_collection
 
@@ -57,79 +56,6 @@ def fetch_image_from_message(message):
             image_object = (attachment.url, "image/png")
             break
     return image_object
-
-
-async def handle_bot_mention(message, bot, no_context=False):
-    staff_role = message.guild.get_role(ADMIN_ROLE_ID)
-    member = message.guild.get_member(message.author.id)
-
-    # Check if the message is in an allowed channel
-    if message.channel.id not in ALLOWED_CHANNELS:
-        logger.debug(
-            f"User {message.author} attempted to use AI in non-allowed channel: {message.channel.name}"
-        )
-        await message.reply(
-            "The AI cannot used in this channel.",
-            mention_author=True,
-        )
-        return True
-
-    if is_user_blacklisted(message.author.id):
-        logger.warning(
-            f"Blacklisted user {message.author} (ID: {message.author.id}) attempted to use AI"
-        )
-        await message.reply(
-            "**Time Travel Required!**\n"
-            "You'll gain access to this feature on **August 12th, 2036**.\n",
-            mention_author=True,
-        )
-        return True
-
-    # Cooldown logic: max 1 use per minute per user
-    now = time.time()
-    user_id = message.author.id
-    timestamps = MENTION_COOLDOWNS.get(user_id, [])
-    # Remove timestamps older than 60 seconds
-    timestamps = [t for t in timestamps if now - t < 60]
-    if len(timestamps) >= 1 and not staff_role in member.roles:
-        await message.reply(
-            "You are using this feature too quickly. Please wait before trying again.",
-            mention_author=True,
-        )
-        return True
-    timestamps.append(now)
-    MENTION_COOLDOWNS[user_id] = timestamps
-
-    # Prioritize the image object from the first message
-    image_object = fetch_image_from_message(message)
-
-    # Check if the message is a reply to another message
-    reply_content = None
-    if message.reference:
-        try:
-            referenced_message = await message.channel.fetch_message(
-                message.reference.message_id
-            )
-            reply_content = referenced_message
-
-            # Check if the referenced message has an image object (if not already set)
-            if image_object is None:
-                image_object = fetch_image_from_message(referenced_message)
-
-        except discord.NotFound:
-            logger.error("Referenced message not found.")
-        except discord.Forbidden:
-            logger.error(
-                "Bot does not have permission to fetch the referenced message."
-            )
-        except discord.HTTPException as e:
-            logger.error(
-                "An error occurred while fetching the referenced message: %s", e
-            )
-
-    # Pass the reply content to forward_to_google_api
-    await forward_to_google_api(message, bot, image_object, reply_content, no_context)
-    return True
 
 
 async def handle_dm(message):
@@ -441,15 +367,6 @@ async def handle_message(message, bot):
     if message.guild is None:
         await handle_dm(message)
         return
-
-    grok_role = message.guild.get_role(GROK_ROLE_ID)
-    if grok_role in message.role_mentions:
-        if await handle_bot_mention(message, bot, True):
-            return
-
-    if bot.user in message.mentions:
-        if await handle_bot_mention(message, bot):
-            return
 
     # Too many mentions
     if len(message.mentions) >= 3:

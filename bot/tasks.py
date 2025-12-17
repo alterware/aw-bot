@@ -5,7 +5,6 @@ import discord
 import requests
 from discord.ext import commands, tasks
 
-from bot.discourse.handle_request import combine_posts_text, fetch_cooked_posts
 from bot.log import logger
 from bot.utils import aware_utcnow, fetch_api_data
 from bot.mongodb import read_random_message_from_collection
@@ -125,36 +124,6 @@ class SteamSaleChecker(commands.Cog):
         await self.bot.wait_until_ready()
 
 
-class DiscourseUpdater(commands.Cog):
-    def __init__(self, bot):
-        self.bot = bot
-        self.update_discourse_data.start()  # Start the task when the cog is loaded
-
-    def cog_unload(self):
-        self.update_discourse_data.cancel()  # Stop the task when the cog is unloaded
-
-    @tasks.loop(hours=6)
-    async def update_discourse_data(self):
-        """
-        Periodically fetches and updates Discourse data for the bot.
-        """
-        tag_name = "docs"
-        logger.info("Fetching Discourse data...")
-        cooked_posts = await fetch_cooked_posts(tag_name)
-        if cooked_posts:
-            combined_text = combine_posts_text(
-                [{"cooked": post} for post in cooked_posts]
-            )
-            self.bot.ai_helper.set_discourse_data(combined_text)
-            logger.info("Discourse data updated successfully.")
-        else:
-            logger.warning(f"No posts found for tag '{tag_name}'.")
-
-    @update_discourse_data.before_loop
-    async def before_update_discourse_data(self):
-        await self.bot.wait_until_ready()
-
-
 async def setup(bot):
     @tasks.loop(minutes=10)
     async def update_status():
@@ -218,6 +187,5 @@ async def setup(bot):
     share_dementia_image.start()
 
     await bot.add_cog(SteamSaleChecker(bot))
-    await bot.add_cog(DiscourseUpdater(bot))
 
     logger.info("Tasks extension loaded!")

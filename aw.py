@@ -4,7 +4,6 @@ import discord
 from discord.ext import commands
 from dotenv import load_dotenv
 
-from bot.ai.handle_request import DiscourseSummarizer
 from bot.log import logger
 from database import initialize_db
 
@@ -23,8 +22,6 @@ build_date = os.getenv("BUILD_DATE")
 git_tag = os.getenv("GIT_TAG")
 
 initialize_db()
-
-bot.ai_helper = DiscourseSummarizer()
 
 
 @bot.event
