@@ -1,10 +1,10 @@
 import random
 import re
 from datetime import datetime, timedelta, timezone
+import requests
+from requests.exceptions import RequestException, Timeout, ConnectionError
 
 import discord
-import requests
-
 from bot.log import logger
 
 
@@ -13,18 +13,91 @@ def aware_utcnow():
 
 
 def fetch_api_data():
-    response = requests.get("https://api.getserve.rs/v1/servers/alterware")
-    if response.status_code == 200:
-        return response.json()
-    return {}
+    """
+    Fetch data from the getserve.rs API
+
+    Returns:
+        dict: API response data or empty dict on failure
+    """
+    url = "https://api.getserve.rs/v1/servers/alterware"
+
+    try:
+        response = requests.get(url, timeout=10)
+
+        response.raise_for_status()
+
+        if response.status_code == 200:
+            return response.json()
+        else:
+            logger.warning(f"API returned non-200 status: {response.status_code}")
+            return {}
+
+    except Timeout:
+        logger.error(f"Request to {url} timed out after 10 seconds")
+        return {}
+
+    except ConnectionError as e:
+        # This catches DNS resolution errors, connection refused, etc.
+        logger.error(f"Connection error for {url}: {e}")
+        return {}
+
+    except RequestException as e:
+        logger.error(f"Request failed for {url}: {e}")
+        return {}
+
+    except ValueError as e:
+        logger.error(f"Failed to parse JSON response from {url}: {e}")
+        return {}
+
+    except Exception as e:
+        logger.error(f"Unexpected error while fetching data from {url}: {e}")
+        return {}
 
 
 async def fetch_game_stats(game: str):
+    """
+    Fetch game-specific stats from the getserve.rs API
+
+    Args:
+        game (str): Game identifier
+
+    Returns:
+        dict: Game stats data or None on failure
+    """
     url = f"https://api.getserve.rs/v1/servers/alterware/{game}"
-    response = requests.get(url)
-    if response.status_code == 200:
-        return response.json()
-    else:
+
+    try:
+        response = requests.get(url, timeout=10)
+
+        response.raise_for_status()
+
+        if response.status_code == 200:
+            return response.json()
+        else:
+            logger.warning(
+                f"API returned non-200 status for game {game}: {response.status_code}"
+            )
+            return None
+
+    except Timeout:
+        logger.error(f"Request to {url} timed out after 10 seconds")
+        return None
+
+    except ConnectionError as e:
+        # This catches DNS resolution errors, connection refused, etc.
+        logger.error(f"Connection error for {url}: {e}")
+        return None
+
+    except RequestException as e:
+        logger.error(f"Request failed for {url}: {e}")
+        return None
+
+    except ValueError as e:
+        logger.error(f"Failed to parse JSON response from {url}: {e}")
+        return None
+
+    except Exception as e:
+        logger.error(f"Unexpected error while fetching game stats from {url}: {e}")
         return None
 
 
