@@ -19,7 +19,7 @@ def fetch_api_data():
     Returns:
         dict: API response data or empty dict on failure
     """
-    url = "https://api.getserve.rs/v1/servers/alterware"
+    url = "https://server.alterware.dev/stats.json"
 
     try:
         response = requests.get(url, timeout=10)
@@ -52,93 +52,6 @@ def fetch_api_data():
     except Exception as e:
         logger.error(f"Unexpected error while fetching data from {url}: {e}")
         return {}
-
-
-async def fetch_game_stats(game: str):
-    """
-    Fetch game-specific stats from the getserve.rs API
-
-    Args:
-        game (str): Game identifier
-
-    Returns:
-        dict: Game stats data or None on failure
-    """
-    url = f"https://api.getserve.rs/v1/servers/alterware/{game}"
-
-    try:
-        response = requests.get(url, timeout=10)
-
-        response.raise_for_status()
-
-        if response.status_code == 200:
-            return response.json()
-        else:
-            logger.warning(
-                f"API returned non-200 status for game {game}: {response.status_code}"
-            )
-            return None
-
-    except Timeout:
-        logger.error(f"Request to {url} timed out after 10 seconds")
-        return None
-
-    except ConnectionError as e:
-        # This catches DNS resolution errors, connection refused, etc.
-        logger.error(f"Connection error for {url}: {e}")
-        return None
-
-    except RequestException as e:
-        logger.error(f"Request failed for {url}: {e}")
-        return None
-
-    except ValueError as e:
-        logger.error(f"Failed to parse JSON response from {url}: {e}")
-        return None
-
-    except Exception as e:
-        logger.error(f"Unexpected error while fetching game stats from {url}: {e}")
-        return None
-
-
-async def compile_stats():
-    games = ["s1", "iw6", "t7"]
-    stats_message = "**Stats for all games:**\n"
-    for game in games:
-        data = await fetch_game_stats(game)
-        if data:
-            count_servers = data.get("countServers", "N/A")
-            count_players = data.get("countPlayers", "N/A")
-            stats_message += f"**{game.upper()}:** Total Servers: {count_servers}, Total Players: {count_players}\n"
-        else:
-            stats_message += f"**{game.upper()}:** Failed to fetch stats.\n"
-    return stats_message
-
-
-async def perform_search(query: str):
-    data = fetch_api_data()
-    servers = data.get("servers", [])
-    matching_servers = [
-        server
-        for server in servers
-        if query.lower() in server.get("hostnameDisplay", "").lower()
-        or query.lower() in server.get("ip", "").lower()
-    ]
-
-    if not matching_servers:
-        return "No servers found matching your query."
-
-    max_results = 5
-    message = (
-        f'Top {min(len(matching_servers), max_results)} servers matching "{query}":\n'
-    )
-    for server in matching_servers[:max_results]:
-        message += (
-            f"- **{server['hostnameDisplay']}** | {server['gameDisplay']} | "
-            f"**Gametype**: {server['gametypeDisplay']} | **Map**: {server['mapDisplay']} | "
-            f"**Players**: {server['realClients']}/{server['maxplayers']}\n"
-        )
-    return message
 
 
 # Timeout a member

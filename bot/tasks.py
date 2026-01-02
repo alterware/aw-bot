@@ -128,10 +128,16 @@ async def setup(bot):
     @tasks.loop(minutes=10)
     async def update_status():
         data = fetch_api_data()
-        countPlayers = data.get("countPlayers", 0)
-        countServers = data.get("countServers", 0)
+        total_players = 0
+        total_servers = 0
+
+        if data:
+            for game_key, game_data in data.items():
+                total_players += game_data.get("players", 0)
+                total_servers += game_data.get("servers", 0)
+
         activity = discord.Game(
-            name=f"with {countPlayers} players on {countServers} servers"
+            name=f"with {total_players} players on {total_servers} servers"
         )
         await bot.change_presence(activity=activity)
 
