@@ -335,16 +335,23 @@ async def handle_message_delete(message, bot):
             inline=False,
         )  # noqa
 
-    if message.reference is not None:
-        original_message = await message.channel.fetch_message(
-            message.reference.message_id
-        )
+    try:
+        if message.reference is not None:
+            original_message = await message.channel.fetch_message(
+                message.reference.message_id
+            )
 
-        embed.add_field(
-            name="Replied",
-            value=original_message.author.mention,
-            inline=False,  # noqa
-        )  # noqa
+            embed.add_field(
+                name="Replied",
+                value=original_message.author.mention,
+                inline=False,  # noqa
+            )  # noqa
+    except discord.NotFound:
+        logger.warning("Referenced message not found")
+    except discord.Forbidden:
+        logger.error("No permission to access the referenced message")
+    except discord.HTTPException as e:
+        logger.error(f"Error fetching message: {e}")
 
     embed.set_footer(
         text=f"Message ID: {message.id} | Author ID: {message.author.id}"  # noqa
