@@ -44,6 +44,52 @@ MAX_FOOTER = 2048
 MENTION_COOLDOWNS = {}
 
 
+async def handle_at_everyone(message):
+    if "@everyone" in message.content or "@here" in message.content:
+        logger.info(
+            f"Detected mention from {message.author.name} ({message.author.id})"
+        )
+        logger.info(f"Content: {message.content}")
+
+        # Check permissions
+        perms = message.channel.permissions_for(message.author)
+        logger.debug(f"User has mention_everyone permission: {perms.mention_everyone}")
+
+        # List user's roles and permissions
+        logger.debug(f"User roles: {[role.name for role in message.author.roles]}")
+
+        if not perms.mention_everyone:
+            logger.info("User doesn't have permission to mention everyone")
+
+            spam_role = message.guild.get_role(SPAM_ROLE_ID)
+            logger.info(f"Spam role found: {spam_role}")
+
+            if spam_role:
+                try:
+                    # Check if we can actually assign the role
+                    await message.author.add_roles(spam_role, reason="Spam mention")
+                    logger.info("Role added successfully")
+
+                    await message.reply(
+                        f"Dink Donk! Time to ping everyone! {spam_role.mention}",
+                        mention_author=True,
+                    )
+
+                    await timeout_member(
+                        message.author, timedelta(minutes=5), "Spamming mentions"
+                    )
+                    logger.info("User timed out")
+                    return True
+                except discord.Forbidden:
+                    logger.error("Bot lacks permissions to add role/timeout user")
+                except discord.HTTPException as e:
+                    logger.error(f"HTTP Error: {e}")
+        else:
+            logger.info("User has permission to mention everyone, ignoring")
+
+    return False
+
+
 def fetch_image_from_message(message):
     image_object = None
     for attachment in message.attachments:
@@ -398,26 +444,6 @@ async def handle_message(message, bot):
         await message.delete()
         return
 
-    if "@everyone" in message.content or "@here" in message.content:
-        if not message.channel.permissions_for(message.author).mention_everyone:
-            spam_role = message.guild.get_role(SPAM_ROLE_ID)
-            member = message.guild.get_member(message.author.id)
-
-            # Check if the member already has the spam role
-            if spam_role not in member.roles:
-                await member.add_roles(spam_role)
-
-                # Add the user to the database
-                add_user_to_role(member.id, SPAM_ROLE_ID, member.name)
-
-            await message.reply(
-                f"Dink Donk! Time to ping everyone! {spam_role.mention}",
-                mention_author=True,
-            )
-
-            await timeout_member(member, timedelta(minutes=5), "Spamming mentions")
-            return
-
     # Auto delete torrent if post in chat.
     for file in message.attachments:
         if file.filename.endswith((".torrent", ".TORRENT")):
@@ -425,6 +451,9 @@ async def handle_message(message, bot):
             await timeout_member(member, timedelta(minutes=120), "Torrents")
             await message.delete()
             return
+
+    if await handle_at_everyone(message):
+        return
 
     if await handle_crazy(message):
         return
