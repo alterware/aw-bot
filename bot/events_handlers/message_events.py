@@ -66,9 +66,17 @@ async def handle_at_everyone(message):
 
             if spam_role:
                 try:
-                    # Check if we can actually assign the role
-                    await message.author.add_roles(spam_role, reason="Spam mention")
-                    logger.info("Role added successfully")
+                    if spam_role not in message.author.roles:
+                        # Check if we can actually assign the role
+                        await message.author.add_roles(spam_role, reason="Spam mention")
+
+                        # Add the user to the database
+                        add_user_to_role(
+                            message.author.id, SPAM_ROLE_ID, message.author.name
+                        )
+                        logger.info("Role added successfully")
+                    else:
+                        logger.info("User already has the spam role")
 
                     await message.reply(
                         f"Dink Donk! Time to ping everyone! {spam_role.mention}",
