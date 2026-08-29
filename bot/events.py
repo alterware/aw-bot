@@ -40,4 +40,8 @@ async def setup(bot):
     async def on_message_edit(before, after):
         await handle_message_edit(before, after, bot)
 
+    @bot.event
+    async def on_voice_state_update(member, before, after):
+        await handle_voice_state_update(member, before, after, bot)
+
     logger.info("Events extension loaded!")
