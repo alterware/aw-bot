@@ -1,5 +1,6 @@
 discord.py
 requests
+davey
 audioop-lts
 python-dotenv
 pynacl
