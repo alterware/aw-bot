@@ -25,6 +25,11 @@ SPAM_ROLE_ID = 1350511935677927514
 ADMIN_ROLE_ID = 1112364483915042908
 GROK_ROLE_ID = 1362837967919386916
 
+GHOST_CHANNEL_ID = 1145469106133401682
+AW_CHANNEL_ID = 1145469136919613551
+DEPRECATED_SUPPORT_CHANNELS = [GHOST_CHANNEL_ID, AW_CHANNEL_ID]
+deprecated_support_last_response_time = None
+
 ALLOWED_CHANNELS = [
     1112048063448617142,  # off-topic
     1119371841711112314,  # vip-channel
@@ -94,6 +99,26 @@ async def handle_at_everyone(message):
                     logger.error(f"HTTP Error: {e}")
         else:
             logger.info("User has permission to mention everyone, ignoring")
+
+    return False
+
+
+async def handle_deprecated_support_channel(message):
+    global deprecated_support_last_response_time
+
+    if message.channel.id in DEPRECATED_SUPPORT_CHANNELS:
+        now = aware_utcnow()
+        if (
+            deprecated_support_last_response_time is None
+            or now - deprecated_support_last_response_time >= timedelta(minutes=10)
+        ):
+            deprecated_support_last_response_time = now
+            await message.reply(
+                "Do not ask for support in this channel because the client is no longer "
+                "working. See our announcement channel.",
+                mention_author=True,
+            )
+            return True
 
     return False
 
@@ -470,6 +495,9 @@ async def handle_message(message, bot):
         return
 
     await is_message_a_duplicate(message)
+
+    if await handle_deprecated_support_channel(message):
+        return
 
     if (
         "http" in message.content

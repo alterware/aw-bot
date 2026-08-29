@@ -18,8 +18,6 @@ SPAM_ROLE_ID = 1350511935677927514
 COD_GAMES = {
     10180: {"name": "Modern Warfare 2 (2009)", "channel": 1145458108190163014},
     42680: {"name": "Modern Warfare 3 (2011)", "channel": 1145459504436220014},
-    209160: {"name": "Call of Duty: Ghosts", "channel": 1145469106133401682},
-    209650: {"name": "Call of Duty: Advanced Warfare", "channel": 1145469136919613551},
     311210: {"name": "Call of Duty: Black Ops 3", "channel": 1180796251529293844},
 }
 
