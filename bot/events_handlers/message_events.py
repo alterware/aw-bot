@@ -25,9 +25,16 @@ SPAM_ROLE_ID = 1350511935677927514
 ADMIN_ROLE_ID = 1112364483915042908
 GROK_ROLE_ID = 1362837967919386916
 
+MW2_CHANNEL = 1145458108190163014
+MW3_CHANNEL = 1145459504436220014
 GHOST_CHANNEL_ID = 1145469106133401682
 AW_CHANNEL_ID = 1145469136919613551
-DEPRECATED_SUPPORT_CHANNELS = [GHOST_CHANNEL_ID, AW_CHANNEL_ID]
+DEPRECATED_SUPPORT_CHANNELS = [
+    GHOST_CHANNEL_ID,
+    AW_CHANNEL_ID,
+    MW2_CHANNEL,
+    MW3_CHANNEL,
+]
 deprecated_support_last_response_time = None
 
 ALLOWED_CHANNELS = [
@@ -35,7 +42,7 @@ ALLOWED_CHANNELS = [
     1119371841711112314,  # vip-channel
     1382808781032914975,  # launcher-support
     1180796301953212537,  # bo3-support
-    1145459504436220014,  # mw3-support
+    MW3_CHANNEL,  # mw3-support
 ]
 
 # Discord embed limits
@@ -110,7 +117,7 @@ async def handle_deprecated_support_channel(message):
         now = aware_utcnow()
         if (
             deprecated_support_last_response_time is None
-            or now - deprecated_support_last_response_time >= timedelta(minutes=10)
+            or now - deprecated_support_last_response_time >= timedelta(minutes=60)
         ):
             deprecated_support_last_response_time = now
             await message.reply(
