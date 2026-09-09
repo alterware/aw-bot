@@ -30,7 +30,6 @@ MW3_CHANNEL = 1145459504436220014
 GHOST_CHANNEL_ID = 1145469106133401682
 AW_CHANNEL_ID = 1145469136919613551
 DEPRECATED_SUPPORT_CHANNELS = [
-    GHOST_CHANNEL_ID,
     AW_CHANNEL_ID,
     MW2_CHANNEL,
     MW3_CHANNEL,
@@ -117,7 +116,7 @@ async def handle_deprecated_support_channel(message):
         now = aware_utcnow()
         if (
             deprecated_support_last_response_time is None
-            or now - deprecated_support_last_response_time >= timedelta(minutes=60)
+            or now - deprecated_support_last_response_time >= timedelta(minutes=180)
         ):
             deprecated_support_last_response_time = now
             await message.reply(
