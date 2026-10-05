@@ -12,7 +12,14 @@ BOT_LOG = 1112049391482703873
 GENERAL_CHANNEL = 1110531063744303138
 OFFTOPIC_CHANNEL = 1112048063448617142
 
-intents = discord.Intents.all()
+intents = discord.Intents.none()
+intents.guilds = True
+intents.members = True
+intents.guild_messages = True
+intents.dm_messages = True
+intents.message_content = True
+intents.guild_reactions = True
+intents.voice_states = True
 bot = commands.Bot(command_prefix="!", intents=intents)
 
 # Load environment variables from .env file (if it exists)
